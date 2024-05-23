@@ -1,0 +1,37 @@
+.TextInput{
+    .realInput{
+        text-align: left !important;
+        // padding-left:7px;
+        width:150px !important;
+        font-size: 12px; /* 원하는 폰트 크기 설정 */
+        line-height: 1.5; /* 원하는 행간 설정 */
+        letter-spacing: 0; /* 글자 간격을 0으로 설정 */
+    }
+
+    .textWrap{
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 12px !important;/* 원하는 폰트 크기 설정 */
+        line-height: 1.5; /* 원하는 행간 설정 */
+        letter-spacing: 0; /* 글자 간격을 0으로 설정 */
+        white-space: nowrap; /* line-break 금지 */
+    }
+    .textInputbtnWrap{
+        margin:2px;
+        border-radius:50%;
+        width:22px;
+        height:22px;
+        // background:red;
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        &:hover{
+            width:22px;
+            height:22px;
+            background:#555;
+            color:#fff;
+            cursor:pointer;
+        }
+    }
+}

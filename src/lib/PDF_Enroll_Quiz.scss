@@ -1,0 +1,400 @@
+$main-border-color: #145894;
+$main-border-color-70: #6b94b6;
+$topbar-height:50px;
+
+.PDF_Enroll_Quiz {
+    .no-drag {-ms-user-select: none; -moz-user-select: -moz-none; -webkit-user-select: none; -khtml-user-select: none; user-select:none;}
+
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    // display:flex;
+    position:relative;
+    overflow:hidden;
+    .PDFTopBar{
+        // position:absolute;
+        height:$topbar-height;
+        width:100%;
+        left:0;
+        top:0;
+        background:#383838;
+        box-sizing: border-box;
+        border-bottom: 1px solid #222;
+        box-shadow: 3px 1px 1px #444;
+        display:flex;
+        justify-content: space-between;
+        align-items: center;
+        color:#fff;
+        gap:10px;
+        position:relative;
+        .btnWrap{
+            margin:2px;
+            border-radius:50%;
+            width:37px;
+            height:37px;
+            // background:red;
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            &:hover{
+                background:#555;
+                cursor:pointer;
+            }
+
+            img{
+                fill:#fff;
+                width: 25px;
+                height: 25px;
+            }
+        }
+        .AOI_mode_btn{
+            margin:2px;
+            border-radius:50%;
+            width:37px;
+            height:37px;
+            // background:red;
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            border:none;
+            box-sizing: border-box;
+            border: 1px solid #fff;
+            &:hover{
+                // background:#555;
+                cursor:pointer;
+                opacity: 0.8;
+            }
+     
+            &.Quiz{
+                // background:rgba(255,0,0,.3);
+          
+                &.selected{
+                    background:rgb(255,179,179);
+                    color:red;
+               
+                }
+            }
+            &.Pic{
+                // background:rgba(255,0,0,.3);
+                &.selected{
+                    background:rgb(179,255,179);
+                    //#b3ffb3
+                    color:green;
+               
+                }
+            }
+            &.Text{
+    
+                &.selected{
+                    background:rgb(179,179,255);
+                    color:blue;
+               
+                }
+            }
+            // &:hover{
+            //     color:#eee;
+            // }
+        }
+        .grayBar{
+            
+            height:16px;
+            width:1px;
+            background:gray;
+        }
+        .oneTab{
+            width:100%;
+            // background:red;
+            // height:25px;
+            height:100%;
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            font-size:12px;
+            &.flexstart{
+                justify-content: flex-start;
+            }
+            input{
+                font-size:12px;
+                outline:none;
+                border:none;
+                width:40px;
+                text-align: center;
+                color:#fff;
+                background-color:#111;
+                outline:none;
+                height:18px;
+            }
+            input::selection {
+                background-color: gray;
+            }
+        }
+        // .oneTab.exceptLeft {
+        //     position: absolute; // 왼쪽에 배치
+        //     left:20px;
+            
+        // }
+    }
+    .PDFdynamicAllPage{
+
+        height:calc(100% - #{$topbar-height});
+        transition: width 300ms 300ms, margin-left 300ms 300ms;
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+      
+
+
+        .scrollDiv{
+            width:100%;
+            height:100%;
+            overflow-y: auto;
+            background:#b4b4b4;
+            // scrollbar-width: thin;
+            // scrollbar-color: transparent transparent;
+            box-sizing: border-box;
+            padding-bottom:30px;
+            .onePageWrap{
+                box-sizing: border-box;
+                display:flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                .pageCanvasWrap{
+                    box-sizing: border-box;
+                    // border: 3px solid red;
+                    background:gray;
+                    position:relative;
+                    .onePageCanvas{
+                        margin:auto;
+                        width:100%;
+                        height:100%;
+                        box-sizing: border-box;
+                    }
+                    .highQualityCanvasWrap{
+                        position:absolute;
+                        width:100%;
+                        height:100%;
+                        left:0;
+                        top:0;
+                    }
+                    .AreaCanvasWrap{
+                        position:absolute;
+                        width:100%;
+                        height:100%;
+                        left:0;
+                        top:0;
+                        canvas{
+                            background:rgba(255,0,0,0.1);
+                        }
+                
+                      
+                    }
+                }
+
+              
+            }
+        }
+        // .scrollDiv::-webkit-scrollbar {
+        //     display: none; /* Webkit 브라우저에서 스크롤바 감춤 */
+        //   }
+          
+        //   .scrollDiv::-webkit-scrollbar-thumb {
+        //     display: none; /* Webkit 브라우저에서 스크롤바 썸 감춤 */
+        //   }
+    }
+    .PDFpreview{
+        height:calc(100% - #{$topbar-height});
+        // top:$topbar-height;
+        color:#fff;
+        background:#383838;
+        transition: left 300ms 300ms;
+
+        box-sizing: border-box;
+        .onePreView{
+            height:100%;
+            display:flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            .previewTitle{
+                display:flex;
+                
+                justify-content: flex-start;
+                padding-left:10px;
+                align-items: center;
+                height:30px;
+                font-size:11px;
+                // margin:5px;
+                color:#fff;
+                box-sizing: border-box;
+                border-bottom:1px solid #555;
+                &:hover{
+                    cursor:pointer;
+                }
+                &:focus{
+                    outline:1px solid blue;
+                }
+            }
+            .previewContents{
+                flex:1;
+                transition: max-height 0.4s;
+                overflow-y: auto;
+                border-bottom:1px solid #414141;
+                .pageAOIGroup{
+                    text-align: left;
+                    padding-left:15px;
+                    height:20px;
+                    font-size: 11px;
+                    display:flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    &:hover{
+                        background:#444;
+                        cursor:pointer;
+                    }
+                }
+                .oneAOI{
+                    font-size: 11px;
+                    text-align: left;
+                    padding-left:25px;
+                    height:20px;
+       
+                    display:flex;
+                    justify-content: flex-start;
+                    align-items: center;
+
+                    .aoi_name{
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+
+
+                    .text,.pic,.quiz{
+              
+                        width:18px;
+                        height:18px;
+                        border-radius: 50%;
+                        font-size:9px;
+                        display:flex;
+                        justify-content: center;
+                        align-items: center;
+                        box-sizing: border-box;
+                        border: 1px solid #fff;
+
+                        background:rgb(179,179,255);
+                        color:blue;
+                    }
+                    .quiz{
+                        background:rgb(255,179,179);
+                        color:red;
+                    }
+                    .pic{
+                        background:rgb(179,255,179);
+                        color:green;
+                    }
+
+                    &:hover{
+                        background:#444;
+                        cursor:pointer;
+                    }
+                    &.focused{
+                        background:#666;
+                    }
+                }
+            }
+
+        }
+
+        .onePageWrap{
+            box-sizing: border-box;
+            display:flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            .onePageCanvas{
+                margin:auto;
+                width:100%;
+                height:100%;
+                box-sizing: border-box;
+            }
+            .onePageBlur{
+                position:absolute;
+                width:100%;
+                height:100%;
+                left:0;
+                top:0;
+                background:rgba(0,0,0,.3);
+           
+                &:hover{
+                    background:rgba(0,0,0,.15);
+                }
+                &.selPage{
+                    background:none;
+                    outline: 5px solid #9eaedb;
+                    &:hover{
+                        background:rgba(255,255,255,.35);
+                    }
+                }
+            }
+
+            .pageNumberWrapper{
+                height:25px;
+                color:#fff;
+                font-size:.7rem;
+                display:flex;
+                justify-content: center;
+                align-items: flex-end;
+
+            }
+        }
+    }
+
+
+
+
+    .PDFScroll{
+
+        width: 100%;
+        height: calc(100% - #{$topbar-height});
+        overflow-y: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+        
+        .Page {
+            margin: auto;
+          
+            .PDFcanvas {
+                margin: auto;
+                // z-index: 1000;
+                // position:absolute;
+                box-sizing: border-box;
+                // background:red;
+            }
+        }
+    }
+    //스크롤바 디자인
+    // &::-webkit-scrollbar {
+    //     width: 8px;
+    //     height: 8px;
+    //     background: $main-border-color;
+    // }
+
+    // &::-webkit-scrollbar-thumb {
+    //     // border-radius: 3.5px;
+    //     background-color: $main-border-color;
+
+    //     &:hover {
+    //         background-color: blue;
+    //     }
+    // }
+
+    // &::-webkit-scrollbar-track {
+    //     background: $main-border-color-70;
+    // }
+
+
+   
+}

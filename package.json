@@ -1,0 +1,95 @@
+{
+  "name": "react-pdf-quizmanager",
+  "version": "1.0.1",
+  "description": "react-pdf-quizmanager",
+  "private": false,
+  "author": "guripong",
+  "homepage": "https://github.com/guripong/react-pdf-quizmanager",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/guripong/react-pdf-quizmanager.git"
+  },
+  "peerDependencies": {
+    "react": ">= 17",
+    "react-dom": ">= 17"
+  },
+  "engines": {
+    "node": ">= 14"
+  },
+  "keywords": [
+    "pdf",
+    "react",
+    "react pdf",
+    "react-pdf-quizmanager",
+    "quizmanager"
+  ],
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.es.js",
+      "require": "./dist/uiobject_editor.cjs.js"
+    },
+    "./style.css": "./dist/style.css",
+    "./dist/*": "./dist/*"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "deploy_npm": "npm version patch && npm publish",
+    "dev": "tsc && vite build --watch",
+    "copy": "xcopy /E /I /Y dist src\\dist",
+    "start": "vite --host --open",
+    "build": "tsc && vite build",
+    "build:types": "dts-bundle-generator --config ./dts-bundle-generator.config.ts",
+    "lint:scripts": "eslint ./src --ext .ts",
+    "lint:styles": "stylelint ./**/*.{css,scss}",
+    "format:scripts": "prettier ./src --write",
+    "format:styles": "stylelint ./**/*.{css,scss} --fix"
+  },
+  "dependencies": {
+    "interactjs": "^1.10.27",
+    "lodash": "^4.17.21",
+    "pdfjs-dist": "^2.6.347",
+    "react": ">= 17",
+    "react-dom": ">= 17",
+    "shortid": "^2.2.16",
+    "styled-components": "^5.3.11"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.24.3",
+    "@faker-js/faker": "^8.4.1",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@types/lodash": "^4.17.0",
+    "@types/node": "^20.11.24",
+    "@types/react": "^18.2.74",
+    "@types/react-dom": "^18.2.24",
+    "@types/shortid": "^0.0.32",
+    "@types/styled-components": "^5.1.34",
+    "@typescript-eslint/eslint-plugin": "^7.1.0",
+    "@typescript-eslint/parser": "^7.1.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "dts-bundle-generator": "^9.3.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.2.5",
+    "sass": "^1.74.1",
+    "stylelint": "^16.2.1",
+    "stylelint-config-recommended": "^14.0.0",
+    "stylelint-config-sass-guidelines": "^11.0.0",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.4",
+    "vite-plugin-css-injected-by-js": "^3.5.0",
+    "vite-plugin-dts": "^3.7.3",
+    "vite-plugin-eslint": "^1.8.1",
+    "vite-plugin-stylelint": "^5.3.1",
+    "vite-tsconfig-paths": "^4.3.2"
+  }
+}
