@@ -1,3 +1,4 @@
+import { ResizeEvent } from "@interactjs/types";
 import { PDFPageProxy } from "pdfjs-dist/types/display/api";
 import { RefObject } from "react";
 
@@ -142,7 +143,7 @@ interface CropAreaProps {
     set_selAOI: React.Dispatch<React.SetStateAction<any>>;
     // set_selAOI?: (selectedAOI: { pageNumber: number; AOINumber: number } | null) => void;
     onMove?: (pageIndex: number, areaIndex: number, e: Interact.InteractEvent, containerInform: { width: number; height: number }) => void;
-    onResize?: (pageIndex: number, areaIndex: number, e: Interact.InteractEvent, containerInform: { width: number; height: number }) => void;
+    onResize?: (pageIndex: number, areaIndex: number, e: ResizeEvent, containerInform: { width: number; height: number }) => void;
     onDelete?: (coordinate: Coordinate) => void;
     pageIndex: number;
     areaIndex: number;

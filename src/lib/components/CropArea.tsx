@@ -3,6 +3,7 @@ import interact from 'interactjs';
 import TextInput from './TextInput';
 import QuizDetail from './QuizDetail';
 import { CropAreaInstance, CropAreaProps } from 'lib/PDF_Quiz_Types';
+import { ResizeEvent } from '@interactjs/types';
 
 interface TextInputInstance {
     set_textEditMode: (value: boolean) => void
@@ -16,8 +17,9 @@ const CropArea = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
         const [isFocused, setIsFocused] = useState(false);
         const cropAreaRef = useRef<HTMLDivElement>(null);
         const textInputRef = useRef<TextInputInstance>(null);
-        const [editMode, set_editMode] = useState(false);
-    const [showQuizDetail, set_showQuizDetail] = useState(false);
+        const [editMode, set_editMode] = useState<boolean>(false);
+
+    // const [showQuizDetail, set_showQuizDetail] = useState(false);
 
     useImperativeHandle(ref, () => ({
         set_focusArea() {
@@ -90,16 +92,14 @@ const CropArea = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
         if(!cropAreaRef.current) return;
 
         // console.log("coordinate",coordinate);
-        // console.log("@@@@@@@@@@이벤트등록")
+        console.log("@@@@@@@@@@이벤트등록")
         const interactInstance = interact(cropAreaRef.current);
-
-
-        const handleResizeMove = (e:Interact.InteractEvent) => {
+        const handleResizeMove = (e:ResizeEvent) => {
             if (onResize) {
                 onResize(pageIndex, areaIndex, e, containerInform);
             }
         };
-
+        
         const handleDragMove = (e:Interact.InteractEvent) => {
             if (onMove) {
                 onMove(pageIndex, areaIndex, e, containerInform);
@@ -134,15 +134,16 @@ const CropArea = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
                     }
                 })
             ],
-        }).on('dragmove', handleDragMove)
-            .on('resizemove', handleResizeMove);
-
+        }).on('dragmove', handleDragMove).on('resizemove', handleResizeMove);
 
         // interactInstance.on('dragmove', handleDragMove);
         // interactInstance.on('resizemove', handleResizeMove);
 
         return () => {
             // Clean up the interact instance when the component unmounts
+            console.log(
+                "클린업"
+            )
             interactInstance.unset();
         };
     }, [containerInform, pageIndex, areaIndex, onResize, onMove]);
@@ -204,6 +205,11 @@ const CropArea = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
     }
 
 
+    const handleChangeEditMode=useCallback((editMode:boolean) => {
+        // console.log("editMode바뀜", editMode)
+        set_editMode(editMode);
+    },[]);
+
     return (<div className="CropArea" ref={cropAreaRef} style={cropStyle()}
         // onFocus={handleFocus}
    
@@ -234,10 +240,7 @@ const CropArea = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
                                 cropAreaRef.current?.focus();
                             }}
 
-                            onEditModeChanged={(editMode) => {
-                                // console.log("editMode바뀜", editMode)
-                                set_editMode(editMode);
-                            }}
+                            onEditModeChanged={handleChangeEditMode}
 
                         />
                     </div>
