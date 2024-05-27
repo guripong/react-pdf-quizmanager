@@ -29,8 +29,11 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
     const [preparedPreviewPages, set_preparedPreviewPages] = useState<PreviewPage[]>();
     const [percentPagesData, set_percentPagesData] = useState<PercentPageDataType[]>();
 
-
+    
+    //가장 처음 init 으로 받은 AOI는 여기에 저장됩니다
     const [tempAOI, set_tempAOI] = useState<Coordinate[][]>([]);
+
+    
     const [hideAOIPageListArr, set_hideAOIPageListArr] = useState<any[]>([]);
     const [AOI_mode, set_AOI_mode] = useState<number>(0); // 0 아님, 1Quiz,2글,3사진,표
     const [selAOI, set_selAOI] = useState<any>();

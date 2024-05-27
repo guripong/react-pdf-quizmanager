@@ -35,10 +35,10 @@ function App() {
 
     return [
       [{
-        xr: 0.1, 
-        yr: 0.1, 
-        widthr: 0.1, 
-        heightr: 0.1, 
+        x: 10, 
+        y: 10, 
+        width: 10, 
+        height: 10, 
         id: '1234',
         type: "quiz",
         name: "임시quiz1",
@@ -46,10 +46,10 @@ function App() {
         correctAnswer:1, //1번이 정답
         shouldSolveQuestion:false //문제를 풀어야만 이전과 다음페이지로 이동가능..
       }, {
-        xr: 0.4, 
-        yr: 0.4, 
-        widthr: 0.1, 
-        heightr: 0.1, 
+        x: 40, 
+        y: 40, 
+        width: 10, 
+        height: 10, 
         id: '5678',
         type: "quiz",
         name: "임시quiz2",
@@ -93,7 +93,7 @@ function App() {
     return {
       initLeftPreviewshow: true,
       // specifySize:400,
-      pageMargin: 30,
+      pageMargin: 40,
       wrapperStyle: {
         position: "absolute",
         left: 0,
@@ -163,9 +163,9 @@ function App() {
     </div>
     <br />
 
-    <div style={{ width: '800px',height:'600px', display: "flex", background: "#fff" }}>
+    <div style={{ marginLeft:"5%",width: '90%',height:'700px', display: "flex", background: "#fff" }}>
       <PDF_Enroll_Quiz
-      
+
         AOI={tempAOI}
         pageInform={[
           {

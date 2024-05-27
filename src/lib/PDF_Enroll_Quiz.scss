@@ -156,6 +156,7 @@ $topbar-height:50px;
             padding-bottom:30px;
             &::-webkit-scrollbar {
                 width: 0px; /* 스크롤바 너비 지정 */
+                height:0px;
             }
         
             // &::-webkit-scrollbar-thumb {

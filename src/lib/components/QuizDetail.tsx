@@ -3,20 +3,20 @@ import React,{ useState, useEffect, useRef, MouseEventHandler } from "react";
 import quiz_detail from "../svg/quiz_detail2.svg";
 import { QuizDetailProps } from "lib/PDF_Quiz_Types";
 
-const QuizDetail: React.FC<QuizDetailProps> = ({ coordinate, onQuizDetailChanged, handleQuizDetailCancel }) => {
-    // console.log("coordinate",coordinate)
+const QuizDetail: React.FC<QuizDetailProps> = ({ oneAOI, onQuizDetailChanged, handleQuizDetailCancel }) => {
+    // console.log("oneAOI",oneAOI)
     const [showQuizDetail, set_showQuizDetail] = useState<boolean>(false);
-    const [quizOptionCount, set_quizOptionCount] = useState<number | undefined>(coordinate.quizOptionCount);
-    const [correctAnswer, set_correctAnswer] = useState<number | undefined>(coordinate.correctAnswer);
-    const [shouldSolveQuestion, set_shouldSolveQuestion] = useState<boolean | undefined>(coordinate.shouldSolveQuestion);
+    const [quizOptionCount, set_quizOptionCount] = useState<number | undefined>(oneAOI.quizOptionCount);
+    const [correctAnswer, set_correctAnswer] = useState<number | undefined>(oneAOI.correctAnswer);
+    const [shouldSolveQuestion, set_shouldSolveQuestion] = useState<boolean | undefined>(oneAOI.shouldSolveQuestion);
     const quizDetailRef = useRef<HTMLDivElement>(null);
     // useEffect(() => {
-    //     if (!showQuizDetail && coordinate) {
-    //         set_quizOptionCount(coordinate.quizOptionCount)
-    //         set_correctAnswer(coordinate.correctAnswer)
-    //         set_shouldSolveQuestion(coordinate.shouldSolveQuestion)
+    //     if (!showQuizDetail && oneAOI) {
+    //         set_quizOptionCount(oneAOI.quizOptionCount)
+    //         set_correctAnswer(oneAOI.correctAnswer)
+    //         set_shouldSolveQuestion(oneAOI.shouldSolveQuestion)
     //     }
-    // }, [coordinate, showQuizDetail])
+    // }, [oneAOI, showQuizDetail])
 
 
 

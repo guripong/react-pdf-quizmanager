@@ -1,4 +1,6 @@
-export const arraysAreEqual = (arr1: any[], arr2: any[]): boolean => {
+import { PercentPagesData } from "lib/PDF_Quiz_Types";
+
+export const arraysAreEqual = (arr1: PercentPagesData[], arr2: PercentPagesData[]): boolean => {
     if (!arr1 || !arr2) {
         return false;
     }

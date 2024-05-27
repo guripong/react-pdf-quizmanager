@@ -1,4 +1,4 @@
-import React,{ useState, useEffect, useRef , createRef
+import React,{ useState, useEffect, useRef , createRef, useCallback
     // , useMemo, forwardRef, useImperativeHandle 
 } from "react";
 import * as pdfjsLib from 'pdfjs-dist';
@@ -35,11 +35,11 @@ const PDFpreview: React.FC<PDFPreviewProps> = (props) => {
 
     const PDFpreviewRef = useRef<HTMLDivElement>(null);
     const previewContentsRef = useRef<HTMLDivElement>(null);
-    const AOIRefs = useRef<Array<React.RefObject<HTMLDivElement>>>([]);
-    if (AOIRefs.current.length !== tempAOI.length) {
-        AOIRefs.current = Array(tempAOI.length)
+    const previewPageRefArr = useRef<Array<React.RefObject<HTMLDivElement>>>([]);
+    if (previewPageRefArr.current.length !== tempAOI.length) {
+        previewPageRefArr.current = Array(tempAOI.length)
             .fill(null)
-            .map((_, i) => AOIRefs.current[i] || createRef<HTMLDivElement>());
+            .map((_, i) => previewPageRefArr.current[i] || createRef<HTMLDivElement>());
     }
     
     //스크롤 자동이동 nowPage이동에 따른
@@ -86,19 +86,20 @@ const PDFpreview: React.FC<PDFPreviewProps> = (props) => {
     const [foldPreview, set_foldPreview] = useState(false);
     
     //실제 pdf 보여지는page의 스크롤을 이동하는 함수임
-    const handleScrollTothePage = (pageNumber:number) => {
+    const handleScrollTothePage = useCallback((pageNumber:number) => {
         if (dynamicAllPageRef && dynamicAllPageRef.current) {
             // console.log(dynamicAllPageRef.current);
             dynamicAllPageRef.current.set_scrollMoveToPage(pageNumber);
         }
-    }
+    },[dynamicAllPageRef]);
+
 
     //고른 AOI 가 메뉴에 안보이면 AreaList Scroll을 이동시키는코드
     useEffect(() => {
         if (selAOI && previewContentsRef.current) {
             const pageNumber = selAOI.pageNumber;
             // const AOINumber = selAOI.AOINumber;
-            // AOIRefs.current[pageNumber-1].current.scrollIntoView();
+            // previewPageRefArr.current[pageNumber-1].current.scrollIntoView();
             // 무조건 이동,...
 
             const scrollElement = previewContentsRef.current;
@@ -107,7 +108,7 @@ const PDFpreview: React.FC<PDFPreviewProps> = (props) => {
             const pageWrapHeight = scrollElement.offsetHeight;
             const visibleMin = currentScroll;
             const visibleMax = currentScroll + pageWrapHeight;
-            const targetElement:HTMLDivElement |null = AOIRefs.current[pageNumber-1].current;
+            const targetElement:HTMLDivElement |null = previewPageRefArr.current[pageNumber-1].current;
             //타겟element전까지 계산해야한다
             //1개의 AOI의 높이는 20
             //그룹의 높이도 20임.
@@ -218,7 +219,7 @@ const PDFpreview: React.FC<PDFPreviewProps> = (props) => {
             </div>
             <div className="previewContents" ref={previewContentsRef} style={{ maxHeight: foldAOIList ? '0' : '100%' }}>
                 {tempAOI && tempAOI.map((pageAOI, index) => {
-                    return (<div key={`pageAOI_${index}`} ref={AOIRefs.current[index]}>
+                    return (<div key={`pageAOI_${index}`} ref={previewPageRefArr.current[index]}>
                         <div className={`pageAOIGroup`} onClick={() => {
                             handleScrollTothePage(index+1);
                             set_hideAOIPageListArr(prevState => {

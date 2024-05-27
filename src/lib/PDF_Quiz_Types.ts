@@ -1,4 +1,3 @@
-import { ResizeEvent } from "@interactjs/types";
 import { PDFPageProxy } from "pdfjs-dist/types/display/api";
 import { RefObject } from "react";
 
@@ -15,6 +14,7 @@ interface PDF_Enroll_QuizProps {
     }>;
 
     PDFDocumentOnLoadCallback?: (pages: number) => void;
+    
     path: string;
     option: {
         initViewPercent?: string;
@@ -57,12 +57,10 @@ interface PercentPageDataType {
 }
 
 interface Coordinate {
-    x?: number;
-    y?: number;
-    widthr: number;
-    heightr: number;
-    xr: number;
-    yr: number;
+    width: number;
+    height: number;
+    x: number;
+    y: number;
     id: string;
     type: string;
     name: string;
@@ -120,39 +118,43 @@ interface PDFTopBarProps {
 }
 
 interface QuizDetailProps {
-    coordinate: Coordinate;
+    oneAOI: Coordinate;
     onQuizDetailChanged?: (showQuizDetail: boolean) => void;
     handleQuizDetailCancel?: (showQuizDetail: boolean) => void;
 }
 
 interface MultipleCropDivProps {
-    onFixCropName?: (coordinate: Coordinate, newName: string) => void;
     AOI_mode: number;
-    set_selAOI: React.Dispatch<React.SetStateAction<any>>;
-    coordinates: Coordinate[];
     pageIndex: number;
-    onDelete?: (coordinate: Coordinate) => void;
-    onChange?: (coordinate: Coordinate, index: number, coordinates: Coordinate[]) => void;
-    onResize: any;
-    onMove: any;
+    pageAOIArr: Coordinate[];
+
+    onFixCropName?: (coordinate: Coordinate, newName: string) => void;
+
+    set_selAOI: React.Dispatch<React.SetStateAction<any>>;
+
+
+    onDeleteAOI?: (targetDeleteAOI: Coordinate) => void;
+    onChangeAOI?: ( pageAOIArr: Coordinate[]) => void;
+    onChangeOneAOI: (oneAOI: Coordinate,pageIndex:number,areaIndex:number)=>void
 }
 
 
 interface CropAreaProps {
+    containerRef:React.RefObject<any>//#@!#@!
     onFixCropName?: (coordinate: Coordinate, newName: string) => void;
     set_selAOI: React.Dispatch<React.SetStateAction<any>>;
-    // set_selAOI?: (selectedAOI: { pageNumber: number; AOINumber: number } | null) => void;
-    onMove?: (pageIndex: number, areaIndex: number, e: Interact.InteractEvent, containerInform: { width: number; height: number }) => void;
-    onResize?: (pageIndex: number, areaIndex: number, e: ResizeEvent, containerInform: { width: number; height: number }) => void;
-    onDelete?: (coordinate: Coordinate) => void;
+    // set_selAOI?: (selectedAOI: { pageNumber: number; AOINumber: number } | null) => void
+    onDeleteAOI?: (targetDeleteAOI: Coordinate) => void;
     pageIndex: number;
     areaIndex: number;
-    coordinate: Coordinate;
+    oneAOI: Coordinate;
     containerInform?: { width: number; height: number };
+    onChangeOneAOI:(targetChangeAOI:Coordinate,pageIndex:number,areaIndex:number)=>void
 }
 interface CropAreaInstance {
     set_focusArea(): void;
     set_textEditMode(val: boolean): void;
+    get_oneAOI(): Coordinate;
     // 다른 CropArea 컴포넌트의 메서드나 속성을 여기에 추가할 수 있습니다.
 }
 interface MultipleCropDivInstance {
