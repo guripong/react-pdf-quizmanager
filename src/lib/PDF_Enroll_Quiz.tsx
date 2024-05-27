@@ -16,10 +16,34 @@ import PDFdynamicAllPage from "./PDFdynamicAllPage";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js`;
 
+const defaultPreviewOption={
+    initLeftPreviewshow: true,
+    pageMargin: 40,
+    wrapperStyle:{
+        position:"absolute",
+        left:0,
+        width:150,
+    }
+}
+
 
 const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
     const { className, AOI
-        , pdfInform, previewOption, option, path, PDFDocumentOnLoadCallback } = props;
+        , pdfInform, previewOption:initPreviewOption, 
+        option, path, PDFDocumentOnLoadCallback ,onCloseCallback } = props;
+
+    const previewOption=useMemo(()=>{
+        return {
+            ...defaultPreviewOption,
+            ...initPreviewOption,
+            wrapperStyle: {
+                ...defaultPreviewOption.wrapperStyle,
+                ...initPreviewOption?.wrapperStyle,
+            },
+    };
+    },[initPreviewOption]);
+    
+
     const initFileName = pdfInform?.fileName || "임시파일이름";
 
     const [pages, setPages] = useState<PDFPageProxy[]|null>(null);
@@ -211,12 +235,11 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
 
     useEffect(() => {
         if (!pages) return;
-        if (!previewOption) return;
+        if (!previewOption||!previewOption.wrapperStyle||!previewOption.wrapperStyle.width||!previewOption.pageMargin) return;
         if (preparedPreviewPages) return;
 
-
-        const renderWidth = previewOption.wrapperStyle ? previewOption.wrapperStyle.width - previewOption.pageMargin * 2 : 200;
-        // const renderWidth = previewOption.wrapperStyle.width-40;
+        console.log("@@@@@@@@@@@@@@@미리보기 페이지 생성 관련이슈체크");
+        const renderWidth = previewOption.wrapperStyle.width-40-previewOption.pageMargin;
 
         prepareAllPage(pages);
         async function prepareAllPage(pages: PDFPageProxy[]) {
@@ -307,8 +330,9 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
 
             }
         }
-    }, [previewOption, pages, preparedPreviewPages])
+    }, [previewOption, pages,preparedPreviewPages])
 
+    
     const prevRenderWidth = useRef<number>();
     //레프트바의 preview에 대한..설정인데
     useEffect(() => {
@@ -402,6 +426,7 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
         {previewOption && preparedPreviewPages && percentPagesData ?
             <>
                 <PDFTopBar
+                    onCloseCallback={onCloseCallback}
                     dynamicAllPageRef={dynamicAllPageRef}
                     fileName={fileName}
                     set_fileName={set_fileName}
@@ -442,6 +467,7 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
                 <PDFdynamicAllPage
                     ref={dynamicAllPageRef}
                     leftPreviewShow={leftPreviewShow}
+                    previewOption={previewOption}
                     percentPagesData={percentPagesData}
                     set_nowPage={set_nowPage}
                     tempAOI={tempAOI}

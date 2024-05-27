@@ -1,36 +1,39 @@
 import { PDFPageProxy } from "pdfjs-dist/types/display/api";
 import { RefObject } from "react";
-
+interface previewOption{
+    initLeftPreviewshow?: boolean;
+    pageMargin?: number;
+    wrapperStyle?: {
+        position?: string;
+        left?: number;
+        width?: number;
+    };
+};
 interface PDF_Enroll_QuizProps {
     className?: string;
 
+    path: string;
+
     AOI: Coordinate[][];
 
-    pageInform?: Array<{
-        showPrevButton?: boolean;
-        showNextButton?: boolean;
-        showFinishButton?: boolean;
-        minShouldViewSec?: number;
-    }>;
-
-    PDFDocumentOnLoadCallback?: (pages: number) => void;
-    
-    path: string;
     option: {
         initViewPercent?: string;
     };
-    previewOption?: {
-        initLeftPreviewshow?: boolean;
-        pageMargin: number;
-        wrapperStyle?: {
-            position: string;
-            left: number;
-            width: number;
-        };
-    };
+
+    previewOption?: previewOption;
+
     pdfInform?: {
         fileName: string;
     };
+
+    PDFDocumentOnLoadCallback?: (pages: number) => void;
+    
+    onCloseCallback?: ()=>void;
+    //onSaveCallback
+    //onCloseCallback
+    //onPreviewCallback
+
+
 }
 // Define the prepared page type
 interface PreparedPageType {
@@ -90,7 +93,7 @@ interface PreviewPage {
 interface PDFPreviewProps {
     preparedPreviewPages: PreviewPage[];
     handlePreviewChange: (pageNumber: number) => void;
-    previewOption: any; // Define proper type for previewOption
+    previewOption: previewOption; // Define proper type for previewOption
     leftPreviewShow: boolean;
     nowPage: number;
     dynamicAllPageRef: React.RefObject<any>; // Define proper type for dynamicAllPageRef
@@ -104,6 +107,8 @@ interface PDFPreviewProps {
 }
 
 interface PDFTopBarProps {
+    onCloseCallback?:()=>void;
+
     dynamicAllPageRef: RefObject<any>;
     set_leftPreviewShow: React.Dispatch<React.SetStateAction<boolean>>;
     handleChangeNowPage: (page: number) => void;
@@ -182,6 +187,7 @@ interface PDFdynamicAllPageProps {
     pages: PDFPageProxy[] | null;
     percentPagesData: PercentPageDataType[];
     leftPreviewShow: boolean;
+    previewOption:previewOption;
     // coordinates: Coordinate[];
 }
 

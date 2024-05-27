@@ -1,4 +1,4 @@
-import React, { createRef, useState, useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from "react";
+import React, { createRef, useState, useEffect, useRef, useCallback, forwardRef, useImperativeHandle, useMemo } from "react";
 import _ from "lodash";
 // import MultipleCropDiv from "./components/MutlipleCropDiv";
 import { Coordinate, MultipleCropDivInstance, PDFdynamicAllPageInstance, PDFdynamicAllPageProps, PercentPageDataType, PercentPagesData } from "./PDF_Quiz_Types";
@@ -40,7 +40,7 @@ interface VisibleInformation {
 
 
 const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPageProps>((props, ref) => {
-    const { set_selAOI, set_tempAOI, tempAOI, AOI_mode, set_nowPage, preparePage, pages, percentPagesData, leftPreviewShow } = props;
+    const { previewOption,set_selAOI, set_tempAOI, tempAOI, AOI_mode, set_nowPage, preparePage, pages, percentPagesData, leftPreviewShow } = props;
 
     const scrollDivRef = useRef<HTMLDivElement>(null);
     const pagesArrRef = useRef<Array<React.RefObject<HTMLDivElement>>>([]);
@@ -392,11 +392,18 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
 
 
 
+    const PDFdynamicAllPageStyle=useMemo(()=>{
+        if(!previewOption?.wrapperStyle?.width){
+            return {};
+        }
 
-    return (<div className="PDFdynamicAllPage" style={{
-        marginLeft: leftPreviewShow ? 150 : 0,
-        width: leftPreviewShow ? "calc(100% - 150px)" : "100%"
-    }}>
+        return {
+            marginLeft: leftPreviewShow ? previewOption.wrapperStyle.width : 0,
+            width: leftPreviewShow ? `calc(100% - ${previewOption.wrapperStyle.width}px)` : "100%"
+        }
+    },[leftPreviewShow,previewOption]);
+
+    return (<div className="PDFdynamicAllPage" style={PDFdynamicAllPageStyle}>
         <div onScroll={handleOnScroll} ref={scrollDivRef} className="scrollDiv">
 
         {percentPagesData && percentPagesData.map((onePage, pageIndex) => {

@@ -55,7 +55,7 @@ const MultipleCropDiv2 = forwardRef<MultipleCropDivInstance, MultipleCropDivProp
     const { pageAOIArr } = props;
     if (e.target === containerRef.current) {
       //컨테이너클릭시
-      console.log("클릭!")
+      // console.log("클릭!")
       const pointA = getCursorPosition(e);
       // console.log("마우스다운위치", pointA)
       drawingIndexRef.current = pageAOIArr.length;

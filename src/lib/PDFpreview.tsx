@@ -1,4 +1,4 @@
-import React,{ useState, useEffect, useRef , createRef, useCallback
+import React,{ useState, useEffect, useRef , createRef, useCallback, useMemo
     // , useMemo, forwardRef, useImperativeHandle 
 } from "react";
 import * as pdfjsLib from 'pdfjs-dist';
@@ -44,6 +44,8 @@ const PDFpreview: React.FC<PDFPreviewProps> = (props) => {
     
     //스크롤 자동이동 nowPage이동에 따른
     useEffect(() => {
+        if(!previewOption||!previewOption.pageMargin) return;
+
         if (PDFpreviewRef.current) {
             // 계산을 통해 onePageWrap이 보이게 하는 로직을 작성합니다.
             const pageWrapHeight = PDFpreviewRef.current.offsetHeight;
@@ -143,14 +145,24 @@ const PDFpreview: React.FC<PDFPreviewProps> = (props) => {
 
     //#@! textinput Blur가 호출안댐
     
-    
+
+    const previewStyle= useMemo(()=>{
+        if(!previewOption?.wrapperStyle?.width || !previewOption.pageMargin){
+            return {};
+        }
+        const styleLeft= leftPreviewShow ? 
+        0:-(previewOption.wrapperStyle.width + previewOption.pageMargin * 2);
+
+        return {
+            ...previewOption.wrapperStyle,
+            left: styleLeft
+        }
+    },[previewOption,leftPreviewShow]);
+
+
     return (<div className="PDFpreview no-drag"
 
-        style={{
-            ...previewOption.wrapperStyle,
-            left: leftPreviewShow ? 0 : -(previewOption.wrapperStyle.width + previewOption.pageMargin * 2)
-
-        }}>
+        style={previewStyle}>
         <div className="onePreView">
             <div className="previewTitle" onClick={() => set_foldPreview(d => !d)}>
             <FoldSvg isFold={foldPreview} />
