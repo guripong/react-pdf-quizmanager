@@ -27,10 +27,8 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
 
     useImperativeHandle(ref, () => ({
         set_focusArea() {
-
             setIsFocused(true);
             const el=cropAreaRef.current?.resizableElement.current;
-            console.log("포커스아래아",el)
             el?.scrollIntoView({ block: 'center' });
         },
         set_textEditMode(val) {
@@ -54,29 +52,35 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
 
 
     useEffect(() => {
+        let a: NodeJS.Timeout | number | undefined;
         if (!isFocused) {
-            // console.log("포커스풀림", pageIndex, areaIndex)
+            // console.log("포커스풀림", pageIndex, areaIndex);
+
             set_selAOI(null);
 
         }
         else {
             // console.log("asfasf")
+            // console.log("포커스됨",pageIndex,areaIndex)
+   
+            a =setTimeout(function(){
+                set_selAOI({
+                    pageNumber:pageIndex+1,
+                    AOINumber:areaIndex+1,
+                });
+            },10);
+        }
+        return ()=>{
+            if (a !== undefined) {
+                clearTimeout(a);
+            }
         }
 
-    }, [isFocused, set_selAOI]);
+    }, [isFocused, set_selAOI,pageIndex,areaIndex]);
 
 
 
 
-    useEffect(() => {
-        // console.log("isFocused",isFocused);
-        if (isFocused) {
-            set_selAOI({
-                pageNumber: pageIndex + 1,
-                AOINumber: areaIndex + 1
-            });
-        }
-    }, [isFocused, pageIndex, areaIndex, set_selAOI])
 
 
     //AOI밖에 클릭시.. AOI focus를 풀어줍니다.
@@ -191,13 +195,10 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
     const backgroundColor = useMemo(()=>{
         const { type } = oneAOI;
         let bc;
-        if (type === 'quiz') {
+        if (type === 'MC') {
             bc = 'rgba(255,0,0,.3)';
         }
-        else if (type === 'pic') {
-            bc = "rgba(0,255,0,.3)"
-        }
-        else if (type === 'text') {
+        else if (type === 'SJ') {
             bc = "rgba(0,0,255,.3)";
         }
         return bc;
@@ -231,7 +232,7 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
         //     left: left,
         //     top: top,
         // });
-    },[containerRef,oneAOI]);
+    },[containerRef,oneAOI,onChangeOneAOI,pageIndex,areaIndex]);
 
 
     const handleOnDragStop:RndDragCallback= useCallback((e, d) => {
@@ -253,23 +254,8 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
             }
         });
 
-        // setpsample((b) => {
-        //     setCropRenderSize((bs) => {
-        //         return {
-        //             ...bs,
-        //             x: d.x,
-        //             y: d.y,
-        //         }
-        //     });
 
-
-        //     return {
-        //         ...b,
-        //         left: containerRef.current ? d.x * 100 / containerRef.current.offsetWidth : 0,
-        //         top: containerRef.current ? d.y * 100 / containerRef.current.offsetHeight : 0,
-        //     }
-        // });
-    },[containerRef,oneAOI]);
+    },[containerRef,oneAOI,onChangeOneAOI,pageIndex,areaIndex]);
 
 
     //#@!#@!
@@ -329,7 +315,7 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
 
                         {!editMode &&
                             <>
-                                {oneAOI.type === 'quiz'
+                                {oneAOI.type === 'MC'
                                     && <QuizDetail oneAOI={oneAOI}
                                         onQuizDetailChanged={handleQuizDetailUpdate}
                                         handleQuizDetailCancel={handleQuizDetailCancel}

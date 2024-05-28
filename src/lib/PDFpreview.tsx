@@ -94,7 +94,8 @@ const PDFpreview: React.FC<PDFPreviewProps> = (props) => {
             dynamicAllPageRef.current.set_scrollMoveToPage(pageNumber);
         }
     },[dynamicAllPageRef]);
-
+    
+    // console.log("selAOI",selAOI)
 
     //고른 AOI 가 메뉴에 안보이면 AreaList Scroll을 이동시키는코드
     useEffect(() => {
@@ -245,6 +246,7 @@ const PDFpreview: React.FC<PDFPreviewProps> = (props) => {
                         {!hideAOIPageListArr[index]&&pageAOI.map((oneAOI:Coordinate, AOIindex:number) => {
                             // console.log("oneAOI",oneAOI)
                             const AOI_type = oneAOI.type;
+                            const AOI_type_text = AOI_type==="MC"?"객관식":"주관식";
                             let isSelected=false;
                             if(selAOI&&selAOI.pageNumber===index+1 && selAOI.AOINumber===AOIindex+1){
                                 isSelected=true;
@@ -261,7 +263,7 @@ const PDFpreview: React.FC<PDFPreviewProps> = (props) => {
                                         })
                                     }
                                 }}>
-                                   &nbsp;&nbsp;<div className={AOI_type}>{AOI_type}</div>&nbsp;
+                                   &nbsp;&nbsp;<div className={AOI_type}>{AOI_type_text}</div>&nbsp;
                                    <div className="aoi_name">
                                     {oneAOI.name}
                                     </div>

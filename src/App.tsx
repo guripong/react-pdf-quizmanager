@@ -44,8 +44,8 @@ function App() {
         width: 10,
         height: 10,
         id: '1234',
-        type: "quiz",
-        name: "임시quiz1",
+        type: "MC",
+        name: "객관식(1-1)",
         quizOptionCount: 4, //(1~10 선택가능)
         correctAnswer: 1, //1번이 정답
         shouldSolveQuestion: false //문제를 풀어야만 이전과 다음페이지로 이동가능..
@@ -55,8 +55,8 @@ function App() {
         width: 10,
         height: 10,
         id: '5678',
-        type: "quiz",
-        name: "임시quiz2",
+        type: "SJ",
+        name: "주관식(1-2)",
         quizOptionCount: 4, //(1~10 선택가능)
         correctAnswer: 1, //1번이 정답
         shouldSolveQuestion: false //문제를 풀어야만 이전과 다음페이지로 이동가능..

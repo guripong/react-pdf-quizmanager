@@ -133,7 +133,7 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
         let hs = 0; //지금까지의 페이지 높이들 합
         const data: PercentPageData[] = [];
         const shouldRenderPages: PercentPagesData[] = [];
-
+   
 
         //메인페이지를 결정해줍시다.
         let firstPartVisibleInformation: VisibleInformation | null = null;
@@ -390,7 +390,23 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
         changePercentPagesData();
     }, [changePercentPagesData]);
 
+    const handleChangeOneAOI =(oneAOI:Coordinate,p_i:number,a_i:number)=>{
+        // changejustOneAOI(pageIndex,)
+        //pageIndex,
+        // console.log("@@@onChangeOneAOI",oneAOI,pageIndex,areaIndex)
+        set_tempAOI((prevTempAOI) => {
+            // console.log("prevTempAOI",prevTempAOI);
+            // console.log("oneAOI",oneAOI);
+            return produce(prevTempAOI, draft => {
+                if (oneAOI) {
+                    draft[p_i][a_i] = oneAOI;
+                }
+            });
 
+            // return prevTempAOI;
+        });
+
+    }
 
     const PDFdynamicAllPageStyle=useMemo(()=>{
         if(!previewOption?.wrapperStyle?.width){
@@ -472,22 +488,7 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
                             onFixCropName={(targetcoordinate, newname) => changeCropName(pageIndex, targetcoordinate, newname)}
                             set_selAOI={set_selAOI}
 
-                            onChangeOneAOI={(oneAOI,p_i,a_i)=>{
-                                // changejustOneAOI(pageIndex,)
-                                //pageIndex,
-                                // console.log("@@@onChangeOneAOI",oneAOI,pageIndex,areaIndex)
-                                set_tempAOI((prevTempAOI) => {
-                                    // console.log("prevTempAOI",prevTempAOI);
-                                    return produce(prevTempAOI, draft => {
-                                        if (oneAOI) {
-                                            draft[p_i][a_i] = oneAOI;
-                                        }
-                                    });
-
-                                    // return prevTempAOI;
-                                });
-
-                            }}
+                            onChangeOneAOI={handleChangeOneAOI}
                         />
                     }
                 </div>

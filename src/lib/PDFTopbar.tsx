@@ -74,9 +74,8 @@ const PDFTopBar: React.FC<PDFTopBarProps> = (props) => {
         </div>
 
         <div className="oneTab">
-                <button className={`AOI_mode_btn Quiz ${AOI_mode===1?'selected':''}`}onClick={()=>handleToggleAOI(1)}>Quiz</button>
-                <button className={`AOI_mode_btn Pic ${AOI_mode===2?'selected':''}`}  onClick={()=>handleToggleAOI(2)}>Pic</button>
-                <button className={`AOI_mode_btn Text ${AOI_mode===3?'selected':''}`} onClick={()=>handleToggleAOI(3)}>Text</button>
+                <button className={`AOI_mode_btn MC ${AOI_mode===1?'selected':''}`} onClick={()=>handleToggleAOI(1)}>객관식</button>
+                <button className={`AOI_mode_btn SJ ${AOI_mode===2?'selected':''}`} onClick={()=>handleToggleAOI(2)}>주관식</button>
         </div>
 
 

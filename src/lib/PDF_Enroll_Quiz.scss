@@ -49,8 +49,8 @@ $topbar-height:50px;
         }
         .AOI_mode_btn{
             margin:2px;
-            border-radius:50%;
-            width:37px;
+            border-radius:2%;
+            width:60px;
             height:37px;
             // background:red;
             display:flex;
@@ -65,7 +65,7 @@ $topbar-height:50px;
                 opacity: 0.8;
             }
      
-            &.Quiz{
+            &.MC{
                 // background:rgba(255,0,0,.3);
           
                 &.selected{
@@ -74,16 +74,16 @@ $topbar-height:50px;
                
                 }
             }
-            &.Pic{
-                // background:rgba(255,0,0,.3);
-                &.selected{
-                    background:rgb(179,255,179);
-                    //#b3ffb3
-                    color:green;
+            // &.Pic{
+            //     // background:rgba(255,0,0,.3);
+            //     &.selected{
+            //         background:rgb(179,255,179);
+            //         //#b3ffb3
+            //         color:green;
                
-                }
-            }
-            &.Text{
+            //     }
+            // }
+            &.SJ{
     
                 &.selected{
                     background:rgb(179,179,255);
@@ -279,12 +279,11 @@ $topbar-height:50px;
                         text-overflow: ellipsis;
                     }
 
-
-                    .text,.pic,.quiz{
-              
-                        width:18px;
+                    //preview 존
+                    .MC,.SJ{
+                        // width:18px;
                         height:18px;
-                        border-radius: 50%;
+                        border-radius: 3%;
                         font-size:9px;
                         display:flex;
                         justify-content: center;
@@ -295,14 +294,14 @@ $topbar-height:50px;
                         background:rgb(179,179,255);
                         color:blue;
                     }
-                    .quiz{
+                    .MC{
                         background:rgb(255,179,179);
                         color:red;
                     }
-                    .pic{
-                        background:rgb(179,255,179);
-                        color:green;
-                    }
+                    // .pic{
+                    //     background:rgb(179,255,179);
+                    //     color:green;
+                    // }
 
                     &:hover{
                         background:#444;

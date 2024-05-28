@@ -59,7 +59,7 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
 
     
     const [hideAOIPageListArr, set_hideAOIPageListArr] = useState<any[]>([]);
-    const [AOI_mode, set_AOI_mode] = useState<number>(0); // 0 아님, 1Quiz,2글,3사진,표
+    const [AOI_mode, set_AOI_mode] = useState<number>(0); // 0 아님, 1객관식,2주관식
     const [selAOI, set_selAOI] = useState<any>();
     // console.log("hideAOIPageListArr",hideAOIPageListArr)
 
@@ -349,7 +349,7 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
                 // const contentHeight = wrapEl.offsetHeight;
 
                 const intViewPercent = parseInt(viewPercent);
-                const sidebarSize = leftPreviewShow ? 150 : 0;
+                const sidebarSize = leftPreviewShow ? previewOption.wrapperStyle.width : 0; 
                 const renderWidth = (wrapEl!.offsetWidth - sidebarSize) * intViewPercent / 100;
 
                 if (prevRenderWidth.current === renderWidth) {
@@ -412,7 +412,7 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
         return () => {
             resizeObserver.disconnect();
         }
-    }, [preparedPreviewPages, viewPercent, leftPreviewShow])
+    }, [preparedPreviewPages, viewPercent, leftPreviewShow,previewOption])
 
 
 

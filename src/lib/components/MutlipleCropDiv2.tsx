@@ -10,7 +10,7 @@ import CropArea2 from './CropArea2';
 
 
 const MultipleCropDiv2 = forwardRef<MultipleCropDivInstance, MultipleCropDivProps>((props, ref) => {
-  const { AOI_mode, pageAOIArr, pageIndex, onDeleteAOI } = props;
+  const { AOI_mode, pageAOIArr, pageIndex, onDeleteAOI ,onChangeAOI} = props;
   const drawingIndexRef = useRef(-1);
   const pointARef = useRef<null | { x: number; y: number; xr: number; yr: number }>(null);
   const isMouseDown = useRef<boolean | null>(null);
@@ -24,7 +24,6 @@ const MultipleCropDiv2 = forwardRef<MultipleCropDivInstance, MultipleCropDivProp
   //여기에 하나의 PDF page안의 AOI들이 여기 들어있음
   const cropAreaRefArr = useRef<React.RefObject<CropAreaInstance>[]>([]);
 
-
   useImperativeHandle(ref, () => ({
     set_focusArea(AreaNumber) {
       if (cropAreaRefArr.current && cropAreaRefArr.current[AreaNumber - 1]
@@ -33,6 +32,7 @@ const MultipleCropDiv2 = forwardRef<MultipleCropDivInstance, MultipleCropDivProp
       }
     },
   }), []);
+
 
 
   const getCursorPosition = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -51,8 +51,8 @@ const MultipleCropDiv2 = forwardRef<MultipleCropDivInstance, MultipleCropDivProp
   };
 
 
+
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    const { pageAOIArr } = props;
     if (e.target === containerRef.current) {
       //컨테이너클릭시
       // console.log("클릭!")
@@ -66,9 +66,9 @@ const MultipleCropDiv2 = forwardRef<MultipleCropDivInstance, MultipleCropDivProp
     }
   };
 
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if(!containerRef.current) return;
-    const { onChangeAOI, pageAOIArr } = props;
     const pointA = pointARef.current;
     if (!pointA) return;
     if (!AOI_mode) return;
@@ -80,14 +80,14 @@ const MultipleCropDiv2 = forwardRef<MultipleCropDivInstance, MultipleCropDivProp
       const pointB = getCursorPosition(e);
       isMouseMove.current = true;
       let type = "";
+      let temp_name="";
       if (AOI_mode === 1) {
-        type = "quiz"
+        type = "MC"
+        temp_name="객관식";
       }
       else if (AOI_mode === 2) {
-        type = "pic"
-      }
-      else if (AOI_mode === 3) {
-        type = "text"
+        type = "SJ"
+        temp_name="주관식";
       }
 
 
@@ -99,12 +99,12 @@ const MultipleCropDiv2 = forwardRef<MultipleCropDivInstance, MultipleCropDivProp
         height: Math.abs(pointA.yr - pointB.yr),
         id: idRef.current,
         type: type,
-        name: `임시영역(${pageIndex + 1}-${pageAOIArr.length})`
+        name: `${temp_name}(${pageIndex + 1}-${pageAOIArr.length})`
       };
 
 
 
-      if (type === 'quiz') {
+      if (type === 'MC') {
         tempCoordinate.quizOptionCount = 4;
         tempCoordinate.correctAnswer = 1;
         tempCoordinate.shouldSolveQuestion = false;
@@ -113,6 +113,7 @@ const MultipleCropDiv2 = forwardRef<MultipleCropDivInstance, MultipleCropDivProp
       // console.log("pointA",pointA)
       // console.log("pageAOIArr",pageAOIArr)
       const nextpageAOIArr = [...pageAOIArr];
+      // console.log("drawingIndexRef.current",drawingIndexRef.current)
       nextpageAOIArr[drawingIndexRef.current] = tempCoordinate;
 
       // if (typeof onDraw === 'function') {
@@ -136,7 +137,7 @@ const MultipleCropDiv2 = forwardRef<MultipleCropDivInstance, MultipleCropDivProp
     if(!isMouseMove.current){
       return;
     }
-
+    // console.log("마우스무브 신규생성만해당")
     isMouseMove.current=false;
     isMouseDown.current=false;
 
@@ -152,15 +153,12 @@ const MultipleCropDiv2 = forwardRef<MultipleCropDivInstance, MultipleCropDivProp
     }
 
     // console.log("cropAreaRefArr.current",cropAreaRefArr.current[cropAreaRefArr.current.length-1])
-    if(cropAreaRefArr.current&&cropAreaRefArr.current.length>0){
-
-
+    if(cropAreaRefArr.current&&cropAreaRefArr.current.length){
       //해당 페이지의 맨 마지막임
       const lastCropAreaRef = cropAreaRefArr.current[cropAreaRefArr.current.length - 1];
       lastCropAreaRef.current?.set_focusArea();
       lastCropAreaRef.current?.set_textEditMode(true);
       
-
     }
 
 
@@ -170,6 +168,7 @@ const MultipleCropDiv2 = forwardRef<MultipleCropDivInstance, MultipleCropDivProp
   const handleMouserLeave = () => {
 
     pointARef.current = null;
+
     if(!pageAOIArr.length)return;
     if (!AOI_mode) return;
     if(!isMouseDown.current){
@@ -178,7 +177,7 @@ const MultipleCropDiv2 = forwardRef<MultipleCropDivInstance, MultipleCropDivProp
     if(!isMouseMove.current){
       return;
     }
-    // console.log("@@@@@@@@@@@@@@@마우스리브")
+    // console.log("@@@@@@@@@@@@@@@마우스리브 신규생성만")
     isMouseMove.current=false;
     isMouseDown.current=false;
     // const coordinate = pageAOIArr[]
@@ -255,15 +254,7 @@ const MultipleCropDiv2 = forwardRef<MultipleCropDivInstance, MultipleCropDivProp
     }
   }
 
-  const handleChangeAOI = ()=>{
-    const { onChangeOneAOI, pageAOIArr } = props;
-    if (typeof onChangeOneAOI === 'function') {
-      //console.log("pageAOIArr",pageAOIArr);
 
-      // onChangeOneAOI();
-    }
-
-  }
 
   //한페이지당  여러 AOI가 이곳에 랜더
   return (<div className="Cropcontainer no-drag"
