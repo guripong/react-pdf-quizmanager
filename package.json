@@ -57,6 +57,7 @@
     "lodash": "^4.17.21",
     "pdfjs-dist": "^2.6.347",
     "react": ">= 17",
+    "react-custom-scrollbars-2": "^4.5.0",
     "react-dom": ">= 17",
     "react-rnd": "^10.4.11",
     "react-use": "^17.5.0",

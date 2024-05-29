@@ -236,7 +236,8 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
 
 
     const handleOnDragStop:RndDragCallback= useCallback((e, d) => {
-        // console.log("원래원본:",oneAOI);
+        // console.log("원래원본드래그끝:",oneAOI);
+
         const newAOI:Coordinate={
             ...oneAOI,
             x: containerRef.current ? d.x * 100 / containerRef.current.offsetWidth : 0,
@@ -263,6 +264,7 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
     //방향을 위치에 따라 할당해줘야함
 
     return (
+  
         <Rnd
             className="CropArea"
             ref={cropAreaRef}
@@ -274,16 +276,48 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
             position={{ x: cropRenderSize.x, y: cropRenderSize.y }}
             maxWidth={"100%"}
             maxHeight={"100%"}
+            enableResizing={{
+                bottom: true,
+                bottomLeft:true,
+                bottomRight:true,
+                left:true,
+                right:true,
+                top:false,
+                topLeft:false,
+                topRight:false,
+            }}
             // minWidth={"5%"}
             // minHeight={"5%"}
+            // disableDragging={disableDragging}
+            // onDragStart={(e)=>{
+            //     console.log("드래그시작",e)
+            //     // e.preventDefault();
+            //     // e.stopPropagation();
+            // }}
             onDragStop={handleOnDragStop}
             onResizeStop={handleOnResizeStop}
         >
-
-
             <div className={`CropAreaWrapper ${isFocused ? 'active-animatioon' : ''}`}>
                 {isFocused &&
-                    <div className="topAOIBar" style={{ opacity: 1 }}>
+                    <div className="topAOIBar" style={{ opacity: 1 ,background:"purple",
+                        
+                    // pointerEvents: "none" // Prevents drag and other pointer events
+                     }} 
+          
+                     onMouseDown={(e) => {
+                        e.stopPropagation();
+                        // console.log("Mouse down on topAOIBar - dragging disabled");
+                    }}
+                        // disableDragging={true}
+                        // draggable={true}
+
+                        // onDragStart={e => {
+                        //     console.log("하아 못하게 막아줘");
+
+                        //     e.preventDefault();
+                        //     e.stopPropagation();
+                        // }} 
+                      >
 
                         <div className="fixCropName">
                             <TextInput
@@ -316,7 +350,8 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
                         {!editMode &&
                             <>
                                 {oneAOI.type === 'MC'
-                                    && <QuizDetail oneAOI={oneAOI}
+                                    && 
+                                        <QuizDetail oneAOI={oneAOI}
                                         onQuizDetailChanged={handleQuizDetailUpdate}
                                         handleQuizDetailCancel={handleQuizDetailCancel}
                                     />}

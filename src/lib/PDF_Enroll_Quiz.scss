@@ -154,10 +154,10 @@ $topbar-height:50px;
             // scrollbar-color: transparent transparent;
             box-sizing: border-box;
             padding-bottom:30px;
-            &::-webkit-scrollbar {
-                width: 0px; /* 스크롤바 너비 지정 */
-                height:0px;
-            }
+            // &::-webkit-scrollbar {
+            //     width: 0px; /* 스크롤바 너비 지정 */
+            //     height:0px;
+            // }
         
             // &::-webkit-scrollbar-thumb {
             //     background-color: transparent; /* 스크롤바 색상 지정 */

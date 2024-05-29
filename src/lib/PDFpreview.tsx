@@ -162,7 +162,6 @@ const PDFpreview: React.FC<PDFPreviewProps> = (props) => {
 
 
     return (<div className="PDFpreview no-drag"
-
         style={previewStyle}>
         <div className="onePreView">
             <div className="previewTitle" onClick={() => set_foldPreview(d => !d)}>
@@ -231,46 +230,48 @@ const PDFpreview: React.FC<PDFPreviewProps> = (props) => {
                 &nbsp;Area List
             </div>
             <div className="previewContents" ref={previewContentsRef} style={{ maxHeight: foldAOIList ? '0' : '100%' }}>
-                {tempAOI && tempAOI.map((pageAOI, index) => {
-                    return (<div key={`pageAOI_${index}`} ref={previewPageRefArr.current[index]}>
-                        <div className={`pageAOIGroup`} onClick={() => {
-                            handleScrollTothePage(index+1);
-                            set_hideAOIPageListArr(prevState => {
-                                const newToggles = { ...prevState };
-                                newToggles[index] = !prevState[index];
-                                return newToggles;
-                            });
-                        }}>
-                                <FoldSvg isFold={hideAOIPageListArr[index]} />   &nbsp;{(index + 1) + 'page AOI'}
-                        </div>
-                        {!hideAOIPageListArr[index]&&pageAOI.map((oneAOI:Coordinate, AOIindex:number) => {
-                            // console.log("oneAOI",oneAOI)
-                            const AOI_type = oneAOI.type;
-                            const AOI_type_text = AOI_type==="MC"?"객관식":"주관식";
-                            let isSelected=false;
-                            if(selAOI&&selAOI.pageNumber===index+1 && selAOI.AOINumber===AOIindex+1){
-                                isSelected=true;
-                            }
-                            return (<div className={`oneAOI ${AOI_type} ${isSelected?'focused':''}`}
-                                key={`oneAOIofPAge_${AOIindex}`}
-                                onClick={() => {
-                                    // handleScrollTothePage(index+1);
-                                    if (dynamicAllPageRef && dynamicAllPageRef.current) {
-                                        dynamicAllPageRef.current.set_focusAOIArea(index + 1, AOIindex + 1);
-                                        set_selAOI({
-                                            pageNumber:index+1,
-                                            AOINumber:AOIindex+1
-                                        })
-                                    }
-                                }}>
-                                   &nbsp;&nbsp;<div className={AOI_type}>{AOI_type_text}</div>&nbsp;
-                                   <div className="aoi_name">
-                                    {oneAOI.name}
+                {tempAOI && tempAOI.map((pageAOI, pageIndex) => {
+                     return (
+                        <div key={`pageAOI_${pageIndex}`} ref={previewPageRefArr.current[pageIndex]}>
+                            <div className={`pageAOIGroup`} onClick={() => {
+                                handleScrollTothePage(pageIndex + 1);
+                                set_hideAOIPageListArr(prevState => {
+                                    const newToggles = { ...prevState };
+                                    newToggles[pageIndex] = !prevState[pageIndex];
+                                    return newToggles;
+                                });
+                            }}>
+                                <FoldSvg isFold={hideAOIPageListArr[pageIndex]} />   &nbsp;{(pageIndex + 1) + ' page AOI'}
+                            </div>
+                            {!hideAOIPageListArr[pageIndex] && pageAOI.map((oneAOI: Coordinate, AOIindex: number) => {
+                                const AOI_type = oneAOI.type;
+                                const AOI_type_text = AOI_type === "MC" ? "객관식" : "주관식";
+                                let isSelected = false;
+                                if (selAOI && selAOI.pageNumber === pageIndex + 1 && selAOI.AOINumber === AOIindex + 1) {
+                                    isSelected = true;
+                                }
+                                return (
+                                    <div className={`oneAOI ${AOI_type} ${isSelected ? 'focused' : ''}`}
+                                        key={`oneAOIofPage_${AOIindex}`}
+                                        onClick={() => {
+                                            if (dynamicAllPageRef && dynamicAllPageRef.current) {
+                                                dynamicAllPageRef.current.set_focusAOIArea(pageIndex + 1, AOIindex + 1);
+                                                set_selAOI({
+                                                    pageNumber: pageIndex + 1,
+                                                    AOINumber: AOIindex + 1
+                                                });
+                                            }
+                                        }}>
+                                        &nbsp;&nbsp;<div className={AOI_type}>{AOI_type_text}</div>&nbsp;
+                                        <div className="aoi_name">
+                                            {oneAOI.name}
+                                        </div>
                                     </div>
-                            </div>)
-                        })}
-                    </div>)
-                }, [])}
+                                );
+                            })}
+                        </div>
+                    );
+                })}
 
             </div>
         </div>

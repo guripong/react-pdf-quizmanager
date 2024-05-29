@@ -9,6 +9,13 @@ interface previewOption{
         width?: number;
     };
 };
+
+interface AOIProps{
+    pageNumber:number;
+    AOINumber:number;
+}
+
+
 interface PDF_Enroll_QuizProps {
     className?: string;
 
@@ -16,11 +23,14 @@ interface PDF_Enroll_QuizProps {
 
     AOI: Coordinate[][];
 
-    option: {
-        initViewPercent?: string;
+    option?: {
+        pageViewOption?:{
+            initViewPercent?: string;
+        },
+        previewOption?:previewOption;
     };
 
-    previewOption?: previewOption;
+    // previewOption?: previewOption;
 
     pdfInform?: {
         fileName: string;
@@ -29,21 +39,14 @@ interface PDF_Enroll_QuizProps {
     PDFDocumentOnLoadCallback?: (pages: number) => void;
     
     onCloseCallback?: ()=>void;
-    //onSaveCallback
+    onSaveCallback?: (newAOI:Coordinate[][],newFileName:string)=>void;
     //onCloseCallback
     //onPreviewCallback
 
 
 }
 // Define the prepared page type
-interface PreparedPageType {
-    valid: boolean;
-    canvas: HTMLCanvasElement;
-    canvasSize: {
-        width: number;
-        height: number;
-    };
-}
+
 // Define the percent page data type
 interface PercentPageDataType {
     pageNumber: number;
@@ -69,10 +72,10 @@ interface Coordinate {
     name: string;
     quizOptionCount?: number;
     correctAnswer?: number;
-    shouldSolveQuestion?: boolean;
 }
 
-interface PreviewPage {
+interface PreRenderedPDFPage {
+    valid:boolean;
     canvas: HTMLCanvasElement;
     pageNumber: number;
     originScale: number;
@@ -90,16 +93,18 @@ interface PreviewPage {
         height: number;
     };
 }
+
+
 interface PDFPreviewProps {
-    preparedPreviewPages: PreviewPage[];
+    preparedPreviewPages: PreRenderedPDFPage[];
     handlePreviewChange: (pageNumber: number) => void;
     previewOption: previewOption; // Define proper type for previewOption
     leftPreviewShow: boolean;
     nowPage: number;
     dynamicAllPageRef: React.RefObject<any>; // Define proper type for dynamicAllPageRef
     tempAOI: any[]; // Define proper type for tempAOI
-    selAOI: any; // Define proper type for selAOI
-    set_selAOI: React.Dispatch<React.SetStateAction<any>>; // Define proper type for set_selAOI
+    selAOI: AOIProps|null; // Define proper type for selAOI
+    set_selAOI: React.Dispatch<React.SetStateAction<AOIProps|null>>; // Define proper type for set_selAOI
     hideAOIPageListArr: boolean[]; // Define proper type for hideAOIPageListArr
     set_hideAOIPageListArr: React.Dispatch<React.SetStateAction<boolean[]>>; // Define proper type for set_hideAOIPageListArr
     foldAOIList: boolean; // Define proper type for foldAOIList
@@ -107,6 +112,7 @@ interface PDFPreviewProps {
 }
 
 interface PDFTopBarProps {
+    handleOnSave?: ()=>void;
     onCloseCallback?:()=>void;
 
     dynamicAllPageRef: RefObject<any>;
@@ -135,7 +141,7 @@ interface MultipleCropDivProps {
 
     onFixCropName?: (coordinate: Coordinate, newName: string) => void;
 
-    set_selAOI: React.Dispatch<React.SetStateAction<any>>;
+    set_selAOI: React.Dispatch<React.SetStateAction<AOIProps|null>>;
 
 
     onDeleteAOI?: (targetDeleteAOI: Coordinate) => void;
@@ -147,7 +153,7 @@ interface MultipleCropDivProps {
 interface CropAreaProps {
     containerRef:React.RefObject<any>//#@!#@!
     onFixCropName?: (coordinate: Coordinate, newName: string) => void;
-    set_selAOI: React.Dispatch<React.SetStateAction<any>>;
+    set_selAOI: React.Dispatch<React.SetStateAction<AOIProps|null>>;
     // set_selAOI?: (selectedAOI: { pageNumber: number; AOINumber: number } | null) => void
     onDeleteAOI?: (targetDeleteAOI: Coordinate) => void;
     pageIndex: number;
@@ -165,20 +171,13 @@ interface CropAreaInstance {
 interface MultipleCropDivInstance {
     set_focusArea(AreaNumber: number): void;
 }
-type preparePage = (page: any,
+type preparePage = (page: PDFPageProxy,
     pageNumber: number,
-    width: number, height: number)
-    => Promise<{
-        valid: boolean; canvas: HTMLCanvasElement,
-        canvasSize: {
-            width: number,
-            height: number
-        }
-
-    }>;
+    specificSize: number)
+    => Promise<PreRenderedPDFPage>;
 
 interface PDFdynamicAllPageProps {
-    set_selAOI: (aoi: Coordinate) => void;
+    set_selAOI: React.Dispatch<React.SetStateAction<AOIProps|null>>;
     set_tempAOI: React.Dispatch<React.SetStateAction<Coordinate[][]>>;
     tempAOI: Coordinate[][];
     AOI_mode: number;
@@ -202,13 +201,13 @@ interface PDFdynamicAllPageInstance {
     moveTothePrevScroll: () => void;
 }
 
-export type {
+export type { AOIProps,
     preparePage, PDFdynamicAllPageInstance,
     PercentPagesData, PDFdynamicAllPageProps,
     MultipleCropDivInstance, CropAreaInstance,
     CropAreaProps, MultipleCropDivProps,
     QuizDetailProps, PDFTopBarProps, Coordinate,
-    PercentPageDataType, PreparedPageType,
-    PDF_Enroll_QuizProps, PreviewPage,
+    PercentPageDataType, 
+    PDF_Enroll_QuizProps, PreRenderedPDFPage,
     PDFPreviewProps
 };

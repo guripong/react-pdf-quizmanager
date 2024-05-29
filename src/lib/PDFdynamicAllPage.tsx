@@ -1,14 +1,23 @@
 import React, { createRef, useState, useEffect, useRef, useCallback, forwardRef, useImperativeHandle, useMemo } from "react";
 import _ from "lodash";
 // import MultipleCropDiv from "./components/MutlipleCropDiv";
-import { Coordinate, MultipleCropDivInstance, PDFdynamicAllPageInstance, PDFdynamicAllPageProps, PercentPageDataType, PercentPagesData } from "./PDF_Quiz_Types";
+import { Coordinate, MultipleCropDivInstance, PDFdynamicAllPageInstance, PDFdynamicAllPageProps, PercentPageDataType, PercentPagesData, PreRenderedPDFPage } from "./PDF_Quiz_Types";
 import { arraysAreEqual, findMaxIndex } from "./util/util";
 // import VirtualScroll from "./components/VirtualScroll";
 import MultipleCropDiv2 from "./components/MutlipleCropDiv2";
 import { produce } from 'immer';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 
+interface ShouldRenderPageInform {
+    pageNumber:number;
+    canvas?:HTMLCanvasElement;
+    pageSize:{
+        width:number;
+        height:number;
+    }
+}
 
-interface PercentPageData {
+interface TempData {
     pageNumber: number;
     pageHeight: number;
     viewMinScrollHeight: number;
@@ -38,18 +47,21 @@ interface VisibleInformation {
 }
 
 
-
+//한페이지를 모두 렌더
 const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPageProps>((props, ref) => {
-    const { previewOption,set_selAOI, set_tempAOI, tempAOI, AOI_mode, set_nowPage, preparePage, pages, percentPagesData, leftPreviewShow } = props;
+    const { previewOption, set_selAOI, set_tempAOI, tempAOI, AOI_mode, set_nowPage, preparePage, pages, percentPagesData, leftPreviewShow } = props;
 
-    const scrollDivRef = useRef<HTMLDivElement>(null);
-    const pagesArrRef = useRef<Array<React.RefObject<HTMLDivElement>>>([]);
+    // const scrollDivRef = useRef<HTMLDivElement>(null);
+    const scrollDivRef = useRef<Scrollbars>(null);
 
-    if (pagesArrRef.current.length !== percentPagesData.length) {
-        pagesArrRef.current = Array(percentPagesData.length)
-            .fill(null)
-            .map((_, i) => pagesArrRef.current[i] || createRef());
-    }
+
+    // const pagesArrRef = useRef<Array<React.RefObject<HTMLDivElement>>>([]);
+
+    // if (pagesArrRef.current.length !== percentPagesData.length) {
+    //     pagesArrRef.current = Array(percentPagesData.length)
+    //         .fill(null)
+    //         .map((_, i) => pagesArrRef.current[i] || createRef());
+    // }
 
 
     // const pageMultileCropDivRef = useRef(Array.from({ length: percentPagesData.length }, () => createRef()));
@@ -70,7 +82,7 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
                 }
             });
         });
-      
+
     };
 
     const deleteCoordinate = (pageIndex: number, targetAOI: Coordinate) => {
@@ -86,7 +98,7 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
             });
         });
     };
-    
+
 
     const changeCropName = (pageIndex: number, targetAOI: Coordinate, newName: string) => {
         set_tempAOI(aoi => {
@@ -101,7 +113,7 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
                 }
             });
         });
-      
+
 
     };
 
@@ -109,19 +121,23 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
 
 
 
-    const [shouldRenderHighQualityPageArray, set_shouldRenderHighQualityPageArray] = useState<PercentPagesData[] | null>(null);
+    const [shouldRenderHighQualityPageArray, set_shouldRenderHighQualityPageArray] = useState<ShouldRenderPageInform[] | null>(null);
     const beforeHighqualityRef = useRef<PercentPagesData[] | null>(null);
     const ismakingHighQualityRef = useRef<boolean>(false); //하이퀄리티 pdfpage 만드는중
     const firstPartVisibleInformRef = useRef<VisibleInformation | null>(null);
     const prevFirstPartVisibleInformRef = useRef<VisibleInformation | null>(null);
     const shouldMoveScrollPercent = useRef<boolean>(false);
 
+
+
+    //#@! 최적화 필요?
     const changePercentPagesData = useCallback(() => {
+        if(!scrollDivRef.current) return; //부모가 없다?
 
         // console.log("@@@@@@@@@@@@@@@changePercentPagesData@@@@@@@@@@@");
         const beforehouldRenderHighQualityPageArray = beforeHighqualityRef.current;
 
-        const { scrollTop, clientHeight, scrollHeight } = scrollDivRef.current || {
+        const { scrollTop, clientHeight, scrollHeight } = scrollDivRef.current.getValues() || {
             scrollTop: 0,
             clientHeight: 0,
             scrollHeight: 0,
@@ -131,9 +147,9 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
         const visibleMin = currentScroll; //보이기위한 최소값
         const visibleMax = currentScroll + clientHeight; //보이기위한 최대값
         let hs = 0; //지금까지의 페이지 높이들 합
-        const data: PercentPageData[] = [];
-        const shouldRenderPages: PercentPagesData[] = [];
-   
+        const temp_data: TempData[] = []; //임시 콘솔 확인용
+        const shouldRenderPages: ShouldRenderPageInform[] = [];
+
 
         //메인페이지를 결정해줍시다.
         let firstPartVisibleInformation: VisibleInformation | null = null;
@@ -147,10 +163,11 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
 
             const ps = hs + onePage.marginHeight;  //page Start
             const pe = hs + onePage.height + onePage.marginHeight; //page End
+            //PDF파일이 화면에 보이는 비율을 계산
             const partVisibleRatio = (Math.min(pe, visibleMax) - Math.max(ps, visibleMin)) / (pe - ps);
 
             partVisibleArr.push(partVisibleRatio)
-            let partVisible = false;
+            let partVisible = false; //지금 PDF파일의 일부가 화면에 보이는가? 스크롤위치에 따라 계산
             if (visibleMin <= ps && visibleMax >= ps) {
                 partVisible = true;
             }
@@ -163,7 +180,7 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
 
 
             // console.log("visibleMin",visibleMin);
-            data.push({
+            temp_data.push({
                 pageNumber: i + 1,
                 pageHeight: onePageHeight,
                 viewMinScrollHeight: hs,
@@ -180,7 +197,7 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
             });
 
 
-
+            // 스크롤위치 강제이동.. viewPercent바꿧을시
             if (partVisible) {
                 if (firstPartVisibleInformation === null) {
                     firstPartVisibleInformation = {
@@ -210,15 +227,16 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
                             const shouldmove = now.scrollHeight * prevRatio;
                             // shouldmove;
                             //
+                            //강제 이동시킴.. percent가 바뀌어도.. 지금 보고있는 PDF위치로                            
+                            scrollDivRef.current.scrollTop(shouldmove);
+                            // scrollDivRef.current.container!.scrollTop = shouldmove;
 
-                            scrollDivRef.current!.scrollTop = shouldmove;
                             prevFirstPartVisibleInformRef.current = firstPartVisibleInformRef.current;
                             firstPartVisibleInformRef.current = firstPartVisibleInformation;
                             return;
                         }
                     }
 
-                    // console.log("하..여기가...")
                     prevFirstPartVisibleInformRef.current = firstPartVisibleInformRef.current;
                     firstPartVisibleInformRef.current = firstPartVisibleInformation;
 
@@ -236,10 +254,12 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
         }
         // console.log("partVisibleArr",partVisibleArr)
 
-        set_nowPage(np => {
+
+        set_nowPage(prevNowPage => {
             const newnp = findMaxIndex(partVisibleArr) + 1;
-            if (np === newnp) {
-                return np;
+            // console.log("newnp",newnp)
+            if (prevNowPage === newnp) {
+                return prevNowPage;
             }
             else {
                 return newnp;
@@ -247,19 +267,23 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
         });
 
 
+        // console.log("shouldRenderPages",shouldRenderPages)
+
 
         //  console.log("data",data);
 
 
         if (beforehouldRenderHighQualityPageArray) {
             if (arraysAreEqual(beforehouldRenderHighQualityPageArray, shouldRenderPages)) {
+                // console.log("안만듬")
                 return;
             }
             else {
                 if (ismakingHighQualityRef.current) {
-
+                    // console.log("이미 만드는중")
                     return;
                 }
+
                 // console.log("111111111이전값이 있지만 틀려서 생성중");
                 //어째서 여기가 계속 호출되는것인가?
                 makeVirtualCanvasHighQualityPage().then(valid => {
@@ -276,10 +300,11 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
         }
         else {
             if (ismakingHighQualityRef.current) {
+                // console.log("이미 만드는중")
                 return;
             }
             //맨처음 만드는경우다.
-            console.log("2222222222이전값이 없고 신규 생성중");
+            // console.log("2222222222이전값이 없고 신규 생성중 하이퀄리티");
             makeVirtualCanvasHighQualityPage().then(valid => {
                 ismakingHighQualityRef.current = false;
                 if (valid) {
@@ -299,7 +324,7 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
                 let promiseChain = Promise.resolve();
 
                 for (let i = 0; i < shouldRenderPages.length; i++) {
-                    const pg = shouldRenderPages[i];
+                    const pg:PercentPagesData = shouldRenderPages[i];
                     const index = pg.pageNumber - 1;
 
                     // console.log("pg",pg)
@@ -309,8 +334,8 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
                     }
 
                     promiseChain = promiseChain.then(() => {
-                        return preparePage(pages[index], pg.pageNumber, pg.pageSize.width, pg.pageSize.height)
-                            .then(res => {
+                        return preparePage(pages[index], pg.pageNumber, pg.pageSize.width)
+                            .then((res:PreRenderedPDFPage) => {
                                 if (res.valid) {
                                     shouldRenderPages[i].canvas = res.canvas;
                                 } else {
@@ -330,52 +355,9 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
 
     }, [percentPagesData, pages, preparePage, set_nowPage]);
 
-
-
-    //해당 page로 스크롤을 이동시킴
-    const forceMoveScrollTopToPage = useCallback((pageNumber: number) => {
-        if (!percentPagesData) return;
-
-        let sctop = null;
-        for (let i = 0; i < percentPagesData.length; i++) {
-            const p: PercentPageDataType = percentPagesData[i];
-            if (p.pageNumber === pageNumber) {
-                sctop = p.viewMinScrollHeight + (p.marginHeight);
-                break;
-            }
-
-        }
-        if (sctop !== null && scrollDivRef.current) {
-            scrollDivRef.current.scrollTop = sctop;
-        }
-
-
-        // console.dir(scrollDivRef);
-        // scrollDivRef.crTop(0);
-    }, [percentPagesData])
-
-
-
-
-    useImperativeHandle(ref, () => ({
-        set_focusAOIArea: (pageNumber, AreaNumber) => {
-            // console.log("pageNumber",pageNumber);
-            // console.log("AreaNumber",AreaNumber);
-
-            if (pageMultileCropDivRef.current &&
-                pageMultileCropDivRef.current.length &&
-                pageMultileCropDivRef.current[pageNumber - 1]) {
-                pageMultileCropDivRef.current[pageNumber - 1]?.current?.set_focusArea(AreaNumber);
-            }
-
-        },
-        set_scrollMoveToPage: (pageNumber) => {
-            forceMoveScrollTopToPage(pageNumber);
-        },
-        moveTothePrevScroll: () => {
-            shouldMoveScrollPercent.current = true;
-        }
-    }), [forceMoveScrollTopToPage]);
+    const handleOnScroll = useCallback(() => {
+        changePercentPagesData();
+    }, [changePercentPagesData]);
 
 
     useEffect(() => {
@@ -386,11 +368,56 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
     }, [changePercentPagesData])
 
 
-    const handleOnScroll = useCallback(() => {
-        changePercentPagesData();
-    }, [changePercentPagesData]);
+    //해당 page로 스크롤을 이동시킴
+    const forceMoveScrollTopToPage = useCallback((pageNumber: number) => {
+        if (!percentPagesData) return;
+        if(!scrollDivRef.current) return;
 
-    const handleChangeOneAOI =(oneAOI:Coordinate,p_i:number,a_i:number)=>{
+        //해당 page의 Top scroll위치를 계산합니다.
+        let sctop = null;
+        for (let i = 0; i < percentPagesData.length; i++) {
+            const p: PercentPageDataType = percentPagesData[i];
+            if (p.pageNumber === pageNumber) {
+                sctop = p.viewMinScrollHeight + (p.marginHeight);
+                break;
+            }
+
+        }
+        if (sctop !== null && scrollDivRef.current.container) {
+            // scrollDivRef.current.container.scrollTop = sctop;
+            //해당 page의 Top scroll위치로 이동합니다;
+            scrollDivRef.current.scrollTop(sctop);
+
+        }
+    }, [percentPagesData])
+
+
+
+
+    useImperativeHandle(ref, () => ({
+        set_focusAOIArea: (pageNumber, AreaNumber) => {
+            // console.log("pageNumber",pageNumber);
+            // console.log("AreaNumber",AreaNumber);
+            if (pageMultileCropDivRef.current &&
+                pageMultileCropDivRef.current.length &&
+                pageMultileCropDivRef.current[pageNumber - 1]) {
+                pageMultileCropDivRef.current[pageNumber - 1]?.current?.set_focusArea(AreaNumber);
+            }
+        },
+        set_scrollMoveToPage: (pageNumber) => {
+            forceMoveScrollTopToPage(pageNumber);
+        },
+        moveTothePrevScroll: () => {
+            shouldMoveScrollPercent.current = true;
+        }
+    }), [forceMoveScrollTopToPage]);
+
+
+
+
+
+
+    const handleChangeOneAOI = (oneAOI: Coordinate, p_i: number, a_i: number) => {
         // changejustOneAOI(pageIndex,)
         //pageIndex,
         // console.log("@@@onChangeOneAOI",oneAOI,pageIndex,areaIndex)
@@ -408,99 +435,108 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
 
     }
 
-    const PDFdynamicAllPageStyle=useMemo(()=>{
-        if(!previewOption?.wrapperStyle?.width){
+    const PDFdynamicAllPageStyle = useMemo(() => {
+        if (!previewOption?.wrapperStyle?.width) {
             return {};
         }
-
         return {
             marginLeft: leftPreviewShow ? previewOption.wrapperStyle.width : 0,
             width: leftPreviewShow ? `calc(100% - ${previewOption.wrapperStyle.width}px)` : "100%"
         }
-    },[leftPreviewShow,previewOption]);
+    }, [leftPreviewShow, previewOption]);
 
-    return (<div className="PDFdynamicAllPage" style={PDFdynamicAllPageStyle}>
-        <div onScroll={handleOnScroll} ref={scrollDivRef} className="scrollDiv">
 
-        {percentPagesData && percentPagesData.map((onePage, pageIndex) => {
-    let highQualityData = null;
-    if (shouldRenderHighQualityPageArray && shouldRenderHighQualityPageArray.find(d => d.pageNumber === pageIndex + 1)) {
-        highQualityData = shouldRenderHighQualityPageArray.find(d => d.pageNumber === pageIndex + 1);
-    }
+
+    // console.log("scrollDivRef.current.container",scrollDivRef.current?.container)
 
     return (
-        <div className="onePageWrap"
-            style={{
-                marginTop: onePage.marginHeight,
-            }}
-            ref={ref=>{
-                pagesArrRef.current[pageIndex]={current:ref};
-            }}
 
-            key={'dynamic_page_' + pageIndex}
-        >
-            <div className="pageCanvasWrap" style={{
-                width: onePage.width,
-                height: onePage.height,
-            }}>
-                <canvas
-                    className="onePageCanvas"
-                    width={onePage.bluredCanvasSize.width} // Set the canvas width
-                    height={onePage.bluredCanvasSize.height} // Set the canvas height
-                    ref={(canvas) => {
-                        if (canvas && onePage.bluredCanvas) {
-                            const context = canvas.getContext('2d');
-                            if (context) {
-                                context.drawImage(onePage.bluredCanvas, 0, 0);
-                            }
+        <div className="PDFdynamicAllPage" style={PDFdynamicAllPageStyle}>
+            <Scrollbars className="scrollDiv" ref={scrollDivRef}
+            onScroll={handleOnScroll} style={{width:"100%",height:"100%"}} >
+                {/* <div onScroll={handleOnScroll} ref={scrollDivRef} className="scrollDiv"> */}
+
+                    {percentPagesData && percentPagesData.map((onePage, pageIndex) => {
+                        let highQualityData = null;
+                        if (shouldRenderHighQualityPageArray && shouldRenderHighQualityPageArray.find(d => d.pageNumber === pageIndex + 1)) {
+                            highQualityData = shouldRenderHighQualityPageArray.find(d => d.pageNumber === pageIndex + 1);
                         }
-                    }}
-                />
-                {highQualityData && highQualityData.pageSize &&
 
-                    <div className="highQualityCanvasWrap">
-                        <canvas
-                            className="onePageCanvas"
-                            width={highQualityData.pageSize.width} // Set the canvas width
-                            height={highQualityData.pageSize.height} // Set the canvas height
-                            ref={(canvas) => {
-                                if (canvas && highQualityData.canvas) {
-                                    const context = canvas.getContext('2d');
-                                    if (context) {
-                                        context.drawImage(highQualityData.canvas, 0, 0);
+                        return (
+                            <div className="onePageWrap"
+                                style={{
+                                    marginTop: onePage.marginHeight,
+                                }}
+                           
+
+                                key={'dynamic_page_' + pageIndex}
+                            >
+                                <div className="pageCanvasWrap" style={{
+                                    width: onePage.width,
+                                    height: onePage.height,
+                                }}>
+                                    <canvas
+                                        className="onePageCanvas"
+                                        width={onePage.bluredCanvasSize.width} // Set the canvas width
+                                        height={onePage.bluredCanvasSize.height} // Set the canvas height
+                                        ref={(canvas) => {
+                                            if (canvas && onePage.bluredCanvas) {
+                                                const context = canvas.getContext('2d');
+                                                if (context) {
+                                                    context.drawImage(onePage.bluredCanvas, 0, 0);
+                                                }
+                                            }
+                                        }}
+                                    />
+                                    {highQualityData && highQualityData.pageSize &&
+
+                                        <div className="highQualityCanvasWrap">
+                                            <canvas
+                                                className="onePageCanvas"
+                                                width={highQualityData.pageSize.width} // Set the canvas width
+                                                height={highQualityData.pageSize.height} // Set the canvas height
+                                                ref={(canvas) => {
+                                                    if (canvas && highQualityData.canvas) {
+                                                        const context = canvas.getContext('2d');
+                                                        if (context) {
+                                                            context.drawImage(highQualityData.canvas, 0, 0);
+                                                        }
+                                                    }
+                                                }}
+                                            />
+                                        </div>
                                     }
-                                }
-                            }}
-                        />
-                    </div>
-                }
-                <div className="AreaCanvasWrap">
-                    {tempAOI && tempAOI[pageIndex] &&
-                        <MultipleCropDiv2
-                            ref={(ref:MultipleCropDivInstance) => {
-                                pageMultileCropDivRef.current[pageIndex] = {current:ref};
-                            }}
-                            AOI_mode={AOI_mode}
-                            pageIndex={pageIndex}
-                            pageAOIArr={tempAOI[pageIndex]}
-                            onChangeAOI={(newPageAOIArr) => changeAOI(pageIndex, newPageAOIArr)}
-                            onDeleteAOI={(targetcoordinate) => deleteCoordinate(pageIndex, targetcoordinate)}
-                            onFixCropName={(targetcoordinate, newname) => changeCropName(pageIndex, targetcoordinate, newname)}
-                            set_selAOI={set_selAOI}
+                                    <div className="AreaCanvasWrap">
+                                        {tempAOI && tempAOI[pageIndex] &&
+                                            <MultipleCropDiv2
+                                                ref={(ref: MultipleCropDivInstance) => {
+                                                    pageMultileCropDivRef.current[pageIndex] = { current: ref };
+                                                }}
+                                                AOI_mode={AOI_mode}
+                                                pageIndex={pageIndex}
+                                                pageAOIArr={tempAOI[pageIndex]}
+                                                onChangeAOI={(newPageAOIArr) => changeAOI(pageIndex, newPageAOIArr)}
+                                                onDeleteAOI={(targetcoordinate) => deleteCoordinate(pageIndex, targetcoordinate)}
+                                                onFixCropName={(targetcoordinate, newname) => changeCropName(pageIndex, targetcoordinate, newname)}
+                                                set_selAOI={set_selAOI}
 
-                            onChangeOneAOI={handleChangeOneAOI}
-                        />
-                    }
-                </div>
-            </div>
-        </div>
-    );
-})}
+                                                onChangeOneAOI={handleChangeOneAOI}
+                                            />
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
 
 
+                {/* </div> */}
+            </Scrollbars>
         </div>
 
-    </div>)
+
+
+    )
 });
 
 export default PDFdynamicAllPage;

@@ -8,22 +8,10 @@ const QuizDetail: React.FC<QuizDetailProps> = ({ oneAOI, onQuizDetailChanged, ha
     const [showQuizDetail, set_showQuizDetail] = useState<boolean>(false);
     const [quizOptionCount, set_quizOptionCount] = useState<number | undefined>(oneAOI.quizOptionCount);
     const [correctAnswer, set_correctAnswer] = useState<number | undefined>(oneAOI.correctAnswer);
-    const [shouldSolveQuestion, set_shouldSolveQuestion] = useState<boolean | undefined>(oneAOI.shouldSolveQuestion);
+
     const quizDetailRef = useRef<HTMLDivElement>(null);
-    // useEffect(() => {
-    //     if (!showQuizDetail && oneAOI) {
-    //         set_quizOptionCount(oneAOI.quizOptionCount)
-    //         set_correctAnswer(oneAOI.correctAnswer)
-    //         set_shouldSolveQuestion(oneAOI.shouldSolveQuestion)
-    //     }
-    // }, [oneAOI, showQuizDetail])
 
 
-
-    // const handleBlurQuizDetail = () => {
-    //     console.log("불러")
-    //     set_showQuizDetail(false);
-    // }
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (quizDetailRef.current && !quizDetailRef.current.contains(e.target as Node)) {
@@ -55,23 +43,23 @@ const QuizDetail: React.FC<QuizDetailProps> = ({ oneAOI, onQuizDetailChanged, ha
 
     return (<div className="QuizDetail"
         ref={quizDetailRef}
-
-
     >
-        <div className="quiz_icon" onClick={() => {
+        <div className="quiz_icon" onClick={(e) => {
+            e.stopPropagation(); // Stop event bubbling
+            // console.log("클릭");
+            
             set_showQuizDetail(qd => !qd)
         }}>
-            <img src={quiz_detail} alt="" />
+            <img src={quiz_detail} alt="Quiz" />
         </div>
 
         {showQuizDetail &&
             <>
-
                 <div className="dropDown_qd">
-                    <div>
-                        <label htmlFor="quizOptionCount">보기 수:</label>
+                    <div className="qd_row">
+                        보기수
                         <select
-                            id="quizOptionCount"
+                            className="normalSelect"
                             value={quizOptionCount}
                             onChange={(e) => set_quizOptionCount(Number(e.target.value))}
                         >
@@ -81,12 +69,12 @@ const QuizDetail: React.FC<QuizDetailProps> = ({ oneAOI, onQuizDetailChanged, ha
                                 </option>
                             ))}
                         </select>
-                        <br />
+                    </div>
+                    <div className="qd_row">
+                        correctAnswer:{correctAnswer}<br />
                     </div>
 
-                    correctAnswer:{correctAnswer}<br />
-                    shouldSolveQuestion:{shouldSolveQuestion}<br />
-                    <div className="quizDetailBtnZone">
+                    <div className="qd_row">
                         <button onMouseDown={handleAdjust}>적용</button>
                         <button onMouseDown={handleCancel}>취소</button>
                     </div>

@@ -2,46 +2,48 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from "react"
 import _ from "lodash";
 import "./PDF_Enroll_Quiz.scss";
 import * as pdfjsLib from 'pdfjs-dist';
-import type {
-    PercentPageDataType
-    // ,PreparedPageType
-    , PDF_Enroll_QuizProps, PreviewPage,
-    PDFdynamicAllPageInstance,Coordinate,
-    preparePage
-} from './PDF_Quiz_Types';
+
 import PDFpreview from "./PDFpreview";
-import { PDFPageProxy, RenderParameters } from "pdfjs-dist/types/display/api";
 import PDFTopBar from "./PDFTopbar";
 import PDFdynamicAllPage from "./PDFdynamicAllPage";
+import { produce } from 'immer';
+
+import type {
+    PercentPageDataType
+    , PDF_Enroll_QuizProps, PreRenderedPDFPage,
+    PDFdynamicAllPageInstance,Coordinate,
+    preparePage,
+    AOIProps
+} from './PDF_Quiz_Types';
+import type { PDFPageProxy, RenderParameters } from "pdfjs-dist/types/display/api";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js`;
-
-const defaultPreviewOption={
-    initLeftPreviewshow: true,
-    pageMargin: 40,
-    wrapperStyle:{
-        position:"absolute",
-        left:0,
-        width:150,
-    }
-}
 
 
 const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
     const { className, AOI
-        , pdfInform, previewOption:initPreviewOption, 
-        option, path, PDFDocumentOnLoadCallback ,onCloseCallback } = props;
+        , pdfInform, option, path, PDFDocumentOnLoadCallback ,onCloseCallback ,onSaveCallback} = props;
+
 
     const previewOption=useMemo(()=>{
+        const defaultPreviewOption={
+            initLeftPreviewshow: true,
+            pageMargin: 40,
+            wrapperStyle:{
+                position:"absolute",
+                left:0,
+                width:150,
+            }
+        }
         return {
             ...defaultPreviewOption,
-            ...initPreviewOption,
+            ...option?.previewOption,
             wrapperStyle: {
                 ...defaultPreviewOption.wrapperStyle,
-                ...initPreviewOption?.wrapperStyle,
+                ...option?.previewOption?.wrapperStyle,
             },
     };
-    },[initPreviewOption]);
+    },[option]);
     
 
     const initFileName = pdfInform?.fileName || "임시파일이름";
@@ -50,7 +52,7 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
     const documentRef = useRef<HTMLDivElement>(null);
     const dynamicAllPageRef = useRef<PDFdynamicAllPageInstance>(null);
 
-    const [preparedPreviewPages, set_preparedPreviewPages] = useState<PreviewPage[]>();
+    const [preparedPreviewPages, set_preparedPreviewPages] = useState<PreRenderedPDFPage[]>();
     const [percentPagesData, set_percentPagesData] = useState<PercentPageDataType[]>();
 
     
@@ -58,14 +60,19 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
     const [tempAOI, set_tempAOI] = useState<Coordinate[][]>([]);
 
     
-    const [hideAOIPageListArr, set_hideAOIPageListArr] = useState<any[]>([]);
+    //처음에는 preview의 AOI리스트가 모두 숨겨져있다..
+    const [hideAOIPageListArr, set_hideAOIPageListArr] = useState<boolean[]>([]);
+
+    //마우스드래그시 객관식이나 주관식이 생성됨
     const [AOI_mode, set_AOI_mode] = useState<number>(0); // 0 아님, 1객관식,2주관식
-    const [selAOI, set_selAOI] = useState<any>();
+
+
+    const [selAOI, set_selAOI] = useState<AOIProps|null>(null);
     // console.log("hideAOIPageListArr",hideAOIPageListArr)
 
 
-    const [leftPreviewShow, set_leftPreviewShow] = useState(previewOption && previewOption.initLeftPreviewshow ? previewOption.initLeftPreviewshow : false);
-    const [viewPercent, set_viewPercent] = useState(option.initViewPercent ? option.initViewPercent : '100%');
+    const [leftPreviewShow, set_leftPreviewShow] = useState(previewOption.initLeftPreviewshow ??  false);
+    const [viewPercent, set_viewPercent] = useState(option?.pageViewOption?.initViewPercent ?? '100%');
     const [nowPage, set_nowPage] = useState<number>(1);
     const [fileName, set_fileName] = useState(initFileName);
     const maxPageNumber = useMemo(() => {
@@ -76,47 +83,29 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
             return 0;
         }
     }, [pages])
+
+    //AreaList  AOI2차원배열 previewList를 default로 접어둠
     const [foldAOIList, set_foldAOIList] = useState(true);
 
     useEffect(() => {
-        if (selAOI) {
+        if (selAOI&&selAOI.pageNumber) {
             set_foldAOIList(false);
-            set_hideAOIPageListArr((prev: any) => {
-                prev[selAOI.pageNumber - 1] = false;
-                return JSON.parse(JSON.stringify(prev));
-            })
-            // set_hideAOIPageListArr(prev => {
-            //     if (!prev || !Array.isArray(prev)) {
-            //         // If prev is falsy or not an array, initialize a new array
-            //         const newHideList = Array(maxPageNumber).fill(true);
-            //         newHideList[selAOI.pageNumber - 1] = false;
-            //         return newHideList;
-            //     }
-
-            //     // prev is truthy and an array, perform the update
-            //     const newHideList = [...prev];
-            //     newHideList[selAOI.pageNumber - 1] = false;
-            //     return newHideList;
-            // });
+            
+            set_hideAOIPageListArr(prev => 
+                produce(prev, draft => {
+                    draft[selAOI.pageNumber - 1] = false;
+                })
+            );
         }
     }, [selAOI])
 
 
 
+    //page수에 맞춰서 tempAOI 2차원배열 생성
     useEffect(() => {
-        const vacancy: any[] = Array.from({ length: maxPageNumber }, () => []);
-        // console.log("vacancy",vacancy)
-        /*
-        let hideList =[];
-        for(let i = 0; i <maxPageNumber; i++){
-            hideList[i]=true;
-        }
-        set_hideAOIPageListArr(hideList);
-        */
-        const initialHideAOIPageListArr: any[] = Array.from({ length: maxPageNumber }, () => true);
+        const vacancy: Coordinate[][] = Array.from({ length: maxPageNumber }, () => []);
+        const initialHideAOIPageListArr: boolean[] = Array.from({ length: maxPageNumber }, () => true);
         set_hideAOIPageListArr(initialHideAOIPageListArr);
-
-
         if (AOI) {
             set_tempAOI(AOI);
             for (let i = 0; i < vacancy.length; i++) {
@@ -135,9 +124,10 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
     }, [maxPageNumber, AOI])
 
 
+
+    //path로 부터 PDF page들을 읽습니다 PDFPageProxy 타입으로.
     useEffect(() => {
         if (!path) return;
-
         async function getPDFdocumentByPath() {
             try {
                 const loadingTask = await pdfjsLib.getDocument(path);
@@ -162,17 +152,15 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
                 console.error("PDF 로드 중 오류 발생:", error);
             }
         }
-
         getPDFdocumentByPath();
     }, [path, PDFDocumentOnLoadCallback]);
 
-    
-    const preparePage = useCallback<preparePage>((page, pageNumber, specificSize,renderWidth) => {
-        return new Promise(async function (resolve, reject) {
 
 
-
-            const shouldPreparePage = page;
+    //하이퀄리티로 렌더해야할경우 사용됨
+    const preparePage = useCallback<preparePage>((page, pageNumber, specificSize) => {
+        return new Promise(function (resolve, reject) {
+            const shouldPreparePage:PDFPageProxy = page;
             if (!shouldPreparePage) {
                 reject({
                     valid: false,
@@ -180,16 +168,18 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
                 })
                 return;
             }
+
+            //오리지날 PDF사이즈들
             const pageOriginWidth = shouldPreparePage.view[2];
             const pageOriginHeight = shouldPreparePage.view[3];
 
-            let myscale;
+
+
+            let myscale=1;
             if (specificSize) {
                 myscale = specificSize / pageOriginWidth;
             }
-            else {
-                myscale = 1 * renderWidth / pageOriginWidth;
-            }
+       
 
 
             const canvas = document.createElement('canvas');
@@ -197,144 +187,80 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
             const viewport = shouldPreparePage.getViewport({ scale: myscale }); // 원하는 스케일로 조정
             canvas.width = viewport.width;
             canvas.height = viewport.height;
-            const renderContext = {
-                canvasContext: context,
+            const renderContext: RenderParameters = {
+                canvasContext: context || {},
                 viewport: viewport,
             };
             // console.log("랜더컨택스 완료")
-            const resizeRatio = renderWidth / viewport.width;
+            const resizeRatio = specificSize / viewport.width;
 
-            await shouldPreparePage.render(renderContext).promise;
+            
+            shouldPreparePage.render(renderContext).promise.then(()=>{
+                resolve({
+                    valid: true,
+                    canvas: canvas,
+                    pageNumber: pageNumber,
+                    originScale: myscale,
+                    PDForiginSize: {
+                        width: pageOriginWidth,
+                        height: pageOriginHeight
+                    },
+                    canvasSize: {
+                        width: viewport.width,
+                        height: viewport.height
+                    },
+                    wrapperSize: {
+                        resizeRatio: resizeRatio,
+                        width: specificSize,
+                        height: viewport.height * resizeRatio
+                    },
+                })
+            });
 
 
-            resolve({
-                valid: true,
-                canvas: canvas,
-                // pageNumber: pageNumber,
-                // originScale: myscale,
-                // PDForiginSize: {
-                //     width: pageOriginWidth,
-                //     height: pageOriginHeight
-                // },
-                canvasSize: {
-                    width: viewport.width,
-                    height: viewport.height
-                },
-                // wrapperSize: {
-                //     resizeRatio: resizeRatio,
-                //     width: renderWidth,
-                //     height: viewport.height * resizeRatio
-                // },
-            })
+          
         });
 
 
     }, [])
     
 
-
+    //미리보기 페이지들 생성 가장우선..저해상도로 먼저 랜더
+    //고정사이즈로 랜더 할까?
     useEffect(() => {
         if (!pages) return;
         if (!previewOption||!previewOption.wrapperStyle||!previewOption.wrapperStyle.width||!previewOption.pageMargin) return;
         if (preparedPreviewPages) return;
 
         console.log("@@@@@@@@@@@@@@@미리보기 페이지 생성 관련이슈체크");
-        const renderWidth = previewOption.wrapperStyle.width-40-previewOption.pageMargin;
-
+        const aimRenderWidthOfPreviewPage = previewOption.wrapperStyle.width-40-previewOption.pageMargin;
+        // const renderWidth=200;
+        
         prepareAllPage(pages);
-        async function prepareAllPage(pages: PDFPageProxy[]) {
-
+        function prepareAllPage(pages: PDFPageProxy[]) {
             console.log("prepareAllPage목표:", pages);
-
-            const p: Promise<PreviewPage>[] = [];
+            const p: Promise<PreRenderedPDFPage>[] = [];
             for (let i = 0; i < pages.length; i++) {
-                p[i] = preparePage2(i + 1, renderWidth);
+                p[i] = preparePage(pages[i],i + 1, aimRenderWidthOfPreviewPage);
             }
-            Promise.all(p).then((res: PreviewPage[]) => {
-                console.log("preparePageRes[]:", res);
+
+            Promise.all(p).then((preparedPDFPages: PreRenderedPDFPage[]) => {
+                console.log("preparedPDFPages[]:", preparedPDFPages);
                 // let preparedPages=res;
-                set_preparedPreviewPages(res);
+                set_preparedPreviewPages(preparedPDFPages);
 
             }).catch(err => {
                 console.log("preparePage에러:", err.msg);
                 // set_loadingmsg(err.msg);
             })
-
-            function preparePage2(pageNumber: number, specificSize: number) {
-                return new Promise<PreviewPage>(function (resolve, reject) {
-                    if (!pageNumber) {
-                        reject({
-                            valid: false,
-                            msg: "페이지넘버가 없음"
-                        })
-                        return;
-                    }
-
-
-                    const shouldPreparePage = pages[pageNumber - 1];
-                    if (!shouldPreparePage) {
-                        reject({
-                            valid: false,
-                            msg: "해당 페이지가 존재하지 않음"
-                        })
-                        return;
-                    }
-                    const pageOriginWidth = shouldPreparePage.view[2];
-                    const pageOriginHeight = shouldPreparePage.view[3];
-
-                    let myscale;
-                    if (specificSize) {
-                        myscale = specificSize / pageOriginWidth;
-                    }
-                    else {
-                        myscale = 1 * renderWidth / pageOriginWidth;
-                    }
-
-
-                    const canvas = document.createElement('canvas');
-                    const context = canvas.getContext('2d', { willReadFrequently: true });
-                    const viewport = shouldPreparePage.getViewport({ scale: myscale }); // 원하는 스케일로 조정
-                    canvas.width = viewport.width;
-                    canvas.height = viewport.height;
-                    const renderContext: RenderParameters = {
-                        canvasContext: context || {},
-                        viewport: viewport,
-                    };
-                    // console.log("랜더컨택스 완료")
-                    const resizeRatio = renderWidth / viewport.width;
-
-                    // await shouldPreparePage.render(renderContext).promise;
-                    shouldPreparePage.render(renderContext).promise.then(() => {
-                        resolve({
-                            canvas: canvas,
-                            pageNumber: pageNumber,
-                            originScale: myscale,
-                            PDForiginSize: {
-                                width: pageOriginWidth,
-                                height: pageOriginHeight
-                            },
-                            canvasSize: {
-                                width: viewport.width,
-                                height: viewport.height
-                            },
-                            wrapperSize: {
-                                resizeRatio: resizeRatio,
-                                width: renderWidth,
-                                height: viewport.height * resizeRatio
-                            },
-                        })
-                    });
-
-
-                });
-
-            }
         }
-    }, [previewOption, pages,preparedPreviewPages])
+    }, [previewOption, pages,preparedPreviewPages,preparePage])
 
     
-    const prevRenderWidth = useRef<number>();
+    const prevHighQualityRenderedWidth = useRef<number>();
     //레프트바의 preview에 대한..설정인데
+    //1.preparedPreviewPages   미리보기 페이지기 완성된 후에 
+    //2.고해상도 page를 준비하기 위한 객체 생성
     useEffect(() => {
         if (!preparedPreviewPages) return;
         const wrapEl: HTMLElement | null = documentRef.current;
@@ -351,11 +277,12 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
                 const intViewPercent = parseInt(viewPercent);
                 const sidebarSize = leftPreviewShow ? previewOption.wrapperStyle.width : 0; 
                 const renderWidth = (wrapEl!.offsetWidth - sidebarSize) * intViewPercent / 100;
+                //renderWidth는 고해상도의 실제 width를 의미
 
-                if (prevRenderWidth.current === renderWidth) {
+                if (prevHighQualityRenderedWidth.current === renderWidth) {
                     return;
                 }
-                prevRenderWidth.current = renderWidth;
+                prevHighQualityRenderedWidth.current = renderWidth;
                 // console.log("PDF 크기",renderWidth)
                 // console.log('PDF 껍데기의 크기가 변경되었습니다!', contentWidth, contentHeight);
                 //   const renderWidth = contentWidth * parseInt(viewPercent) / 100;
@@ -369,7 +296,9 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
             }
             resizing = true; // Set the resizing flag to true
             // console.log("generatePercentPagesData 호출")
-            const viewPercentPagesData = [];
+
+            //하이랜더 안한 데이터들임
+            const viewPercentPagesData:PercentPageDataType[] = [];
             // const intViewPercent = parseInt(viewPercent);
             // const sidebarSize = leftPreviewShow ? 150 : 0;
             // const renderWidth = (wrapEl.offsetWidth - sidebarSize) * intViewPercent / 100;
@@ -403,7 +332,7 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
         }
         const debouncedGeneratePercentPagesData = _.debounce((arg) => {
             generatePercentPagesData(arg)
-        }, 300);
+        }, 100);
 
         if(wrapEl){
             resizeObserver.observe(wrapEl);
@@ -414,18 +343,24 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
         }
     }, [preparedPreviewPages, viewPercent, leftPreviewShow,previewOption])
 
-
+    const handleOnSave = useCallback(()=>{
+        if(onSaveCallback &&typeof onSaveCallback==='function'){
+            onSaveCallback(tempAOI,fileName);
+        }
+    },[onSaveCallback,tempAOI,fileName]);
 
 
     if(!path){
         return <div className="LoadingScreen">PDF 파일을 등록해주세요...</div>
     }
 
+    
 
     return (<div className={`PDF_Enroll_Quiz ${className}`} ref={documentRef}>
         {previewOption && preparedPreviewPages && percentPagesData ?
             <>
                 <PDFTopBar
+                    handleOnSave={handleOnSave}
                     onCloseCallback={onCloseCallback}
                     dynamicAllPageRef={dynamicAllPageRef}
                     fileName={fileName}
@@ -436,7 +371,7 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
                     set_viewPercent={set_viewPercent}
                     maxPageNumber={maxPageNumber}
                     nowPage={nowPage}
-            
+
                     handleChangeNowPage={(p) => {
                         set_nowPage(p)
                     }}

@@ -6,6 +6,128 @@
     box-sizing: border-box;
     position:relative;
     // overflow:hidden;
+    .topAOIBar{
+
+      position:absolute;
+      width:auto;
+      min-width:100%;
+      height:20px;
+      top:-20px;
+      height:20px;
+      background:gray;
+      display:flex;
+      justify-content: space-between;
+      .fixCropName{
+        border: 1px solid black;
+        box-sizing: border-box;
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        float:left;
+        width:auto;
+        height:20px;
+        background:white;
+        color:inherit;
+        input{
+          font-size:12px;
+          outline:none;
+          border:none;
+          width:40px;
+          text-align: center;
+          color:#fff;
+          background-color:#111;
+          outline:none;
+          height:18px;
+        }
+
+      }
+      .QuizDetail{
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        float:right;
+        width:30px;
+        height:20px;
+        background:#ededed;
+        color:white;
+        position:relative;
+
+
+        .quiz_icon{
+          width:100%;
+          height:100%;
+          display:flex;
+          justify-content: center;
+          align-items: center;
+          cursor:pointer;
+
+          &:hover{
+            background:#fff;
+     
+          }
+          img{
+            height:90%;
+            cursor:pointer;
+          }
+        }
+        .dropDown_triangle{
+          background:#ededed;
+          border-left:1px solid green;
+          border-bottom:1px solid green;
+          position:absolute;
+          top: 3px; // 중앙 정렬
+          left: 32px; // 오른쪽 정렬
+          transform: rotate(45deg); // 45도 회전 및 중앙 정렬
+          width: 15px;
+          height: 15px;
+          // z-index: 1;
+        }
+        .dropDown_qd{
+          // z-index: 2;
+
+          border:1px solid green;
+          background:#ededed;
+          opacity: 1;
+          color:#111;
+          position:absolute;
+          top:-10px;
+          left:40px;
+          width:auto;
+          border-radius: 5px;
+          padding:15px;
+          box-sizing: border-box;
+          .normalSelect{
+            border:none;
+            outline:none;
+            cursor:pointer;
+            &:hover{
+              outline:1px solid green;
+            }
+          }
+          .qd_row{
+            margin:5px;
+          }
+        }
+
+    
+      }
+      .delCrop{
+          display:flex;
+          justify-content: center;
+          align-items: center;
+          float:right;
+          width:20px;
+          height:20px;
+          background:black;
+          color:white;
+          &:hover{
+              cursor:pointer;
+              background:#555;
+       
+          }
+      }
+  }
+  
     .CropArea{
         // position:absolute;
         width:100%;
@@ -18,110 +140,7 @@
             position:relative;
             width:100%;
             height:100%;
-            .topAOIBar{
-
-                position:absolute;
-                width:auto;
-                min-width:100%;
-                height:20px;
-                top:-20px;
-                height:20px;
-                background:gray;
-                display:flex;
-                justify-content: space-between;
-                .fixCropName{
-                  border: 1px solid black;
-                  box-sizing: border-box;
-                  display:flex;
-                  justify-content: center;
-                  align-items: center;
-                  float:left;
-                  width:auto;
-                  height:20px;
-                  background:white;
-                  color:inherit;
-                  input{
-                    font-size:12px;
-                    outline:none;
-                    border:none;
-                    width:40px;
-                    text-align: center;
-                    color:#fff;
-                    background-color:#111;
-                    outline:none;
-                    height:18px;
-                  }
-
-                }
-                .QuizDetail{
-                  display:flex;
-                  justify-content: center;
-                  align-items: center;
-                  float:right;
-                  width:30px;
-                  height:20px;
-                  background:#ededed;
-                  color:white;
-                  position:relative;
-                  &:hover{
-                    cursor:pointer;
-                    background:#fff;
-             
-                  }
-                  .quiz_icon{
-                    height:100%;
-                    display:flex;
-                    justify-content: center;
-                    align-items: center;
-                    img{
-                      height:90%;
-      
-                    }
-                
-                  }
-                  .dropDown_triangle{
-                    background:#fff;
-                    border-left:1px solid green;
-                    border-bottom:1px solid green;
-                    position:absolute;
-                    top: 3px; // 중앙 정렬
-                    left: 32px; // 오른쪽 정렬
-                    transform: rotate(45deg); // 45도 회전 및 중앙 정렬
-                    width: 15px;
-                    height: 15px;
-                    // z-index: 1;
-                  }
-                  .dropDown_qd{
-                    border:1px solid green;
-                    background:#ededed;
-                    opacity: 1;
-                    color:#111;
-                    position:absolute;
-                    top:-10px;
-                    left:40px;
-                    width:auto;
-                    border-radius: 5px;
-                    padding:10px;
-                    box-sizing: border-box;
-                  }
-                
-                }
-                .delCrop{
-                    display:flex;
-                    justify-content: center;
-                    align-items: center;
-                    float:right;
-                    width:20px;
-                    height:20px;
-                    background:black;
-                    color:white;
-                    &:hover{
-                        cursor:pointer;
-                        background:#555;
-                 
-                    }
-                }
-            }
+        
         }
     }
 

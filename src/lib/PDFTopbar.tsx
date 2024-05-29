@@ -14,7 +14,7 @@ import { PDFTopBarProps } from "./PDF_Quiz_Types";
 const PDFTopBar: React.FC<PDFTopBarProps> = (props) => {
     const { dynamicAllPageRef, set_leftPreviewShow, handleChangeNowPage, viewPercent,
          set_viewPercent, maxPageNumber, nowPage
-        , set_AOI_mode, AOI_mode, fileName, set_fileName ,onCloseCallback} = props;
+        , set_AOI_mode, AOI_mode, fileName, set_fileName ,onCloseCallback,handleOnSave} = props;
 
     const handleDecreasePercent = useCallback(() => {
         set_viewPercent(v => parseInt(v) - 1 > 25 ? (parseInt(v) - 1) + '%' : v);
@@ -122,6 +122,7 @@ const PDFTopBar: React.FC<PDFTopBarProps> = (props) => {
   
 
         <div className="oneTab">
+            <button onClick={handleOnSave}>저장</button>
             <button onClick={onCloseCallback}>닫기</button>
         </div>
     </div>)

@@ -107,7 +107,6 @@ const MultipleCropDiv2 = forwardRef<MultipleCropDivInstance, MultipleCropDivProp
       if (type === 'MC') {
         tempCoordinate.quizOptionCount = 4;
         tempCoordinate.correctAnswer = 1;
-        tempCoordinate.shouldSolveQuestion = false;
       }
       // console.log("tempCoordinate",tempCoordinate)
       // console.log("pointA",pointA)
