@@ -16,7 +16,7 @@ interface AOIProps{
 }
 
 
-interface PDF_Enroll_QuizProps {
+interface PDFEnrollQuizProps {
     className?: string;
 
     path: string;
@@ -130,8 +130,10 @@ interface PDFTopBarProps {
 
 interface QuizDetailProps {
     oneAOI: Coordinate;
-    onQuizDetailChanged?: (showQuizDetail: boolean) => void;
-    handleQuizDetailCancel?: (showQuizDetail: boolean) => void;
+    pageIndex:number;
+    areaIndex:number;
+   
+    onChangeOneAOI: (oneAOI: Coordinate,pageIndex:number,areaIndex:number)=>void
 }
 
 interface MultipleCropDivProps {
@@ -208,6 +210,6 @@ export type { AOIProps,
     CropAreaProps, MultipleCropDivProps,
     QuizDetailProps, PDFTopBarProps, Coordinate,
     PercentPageDataType, 
-    PDF_Enroll_QuizProps, PreRenderedPDFPage,
+    PDFEnrollQuizProps, PreRenderedPDFPage,
     PDFPreviewProps
 };

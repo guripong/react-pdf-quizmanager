@@ -41,6 +41,18 @@
         }
 
       }
+      .quizShort{
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        float:right;
+        // width:60px;
+        height:20px;
+        background:#ededed;
+        color:#333;
+        position:relative;
+        gap:5px;
+      }
       .QuizDetail{
         display:flex;
         justify-content: center;

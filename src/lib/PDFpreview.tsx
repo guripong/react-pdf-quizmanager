@@ -266,6 +266,12 @@ const PDFpreview: React.FC<PDFPreviewProps> = (props) => {
                                         <div className="aoi_name">
                                             {oneAOI.name}
                                         </div>
+                                        <div className="floatRight">
+                                            {AOI_type==="MC"&&<>
+                                            <span >{`Q:${oneAOI.quizOptionCount} A:${oneAOI.correctAnswer===0?'X':oneAOI.correctAnswer}`}</span>
+                                            </>
+                                            }
+                                        </div>
                                     </div>
                                 );
                             })}

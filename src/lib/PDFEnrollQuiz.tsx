@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import _ from "lodash";
-import "./PDF_Enroll_Quiz.scss";
+import "./PDFEnrollQuiz.scss";
 import * as pdfjsLib from 'pdfjs-dist';
 
 import PDFpreview from "./PDFpreview";
@@ -10,7 +10,7 @@ import { produce } from 'immer';
 
 import type {
     PercentPageDataType
-    , PDF_Enroll_QuizProps, PreRenderedPDFPage,
+    , PDFEnrollQuizProps, PreRenderedPDFPage,
     PDFdynamicAllPageInstance,Coordinate,
     preparePage,
     AOIProps
@@ -20,7 +20,7 @@ import type { PDFPageProxy, RenderParameters } from "pdfjs-dist/types/display/ap
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js`;
 
 
-const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
+const PDFEnrollQuiz: React.FC<PDFEnrollQuizProps> = (props) => {
     const { className, AOI
         , pdfInform, option, path, PDFDocumentOnLoadCallback ,onCloseCallback ,onSaveCallback} = props;
 
@@ -356,7 +356,7 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
 
     
 
-    return (<div className={`PDF_Enroll_Quiz ${className}`} ref={documentRef}>
+    return (<div className={`PDFEnrollQuiz ${className}`} ref={documentRef}>
         {previewOption && preparedPreviewPages && percentPagesData ?
             <>
                 <PDFTopBar
@@ -421,4 +421,4 @@ const PDF_Enroll_Quiz: React.FC<PDF_Enroll_QuizProps> = (props) => {
         }
     </div>)
 }
-export default PDF_Enroll_Quiz;
+export default PDFEnrollQuiz;

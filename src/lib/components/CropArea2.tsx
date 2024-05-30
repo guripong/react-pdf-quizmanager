@@ -28,14 +28,14 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
     useImperativeHandle(ref, () => ({
         set_focusArea() {
             setIsFocused(true);
-            const el=cropAreaRef.current?.resizableElement.current;
+            const el = cropAreaRef.current?.resizableElement.current;
             el?.scrollIntoView({ block: 'center' });
         },
         set_textEditMode(val) {
             // console.log("CropArea의 set_textEditMode 호출")
             set_editMode(val);
         },
-        get_oneAOI(){
+        get_oneAOI() {
             return oneAOI;
         }
     }), [oneAOI]);
@@ -62,21 +62,21 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
         else {
             // console.log("asfasf")
             // console.log("포커스됨",pageIndex,areaIndex)
-   
-            a =setTimeout(function(){
+
+            a = setTimeout(function () {
                 set_selAOI({
-                    pageNumber:pageIndex+1,
-                    AOINumber:areaIndex+1,
+                    pageNumber: pageIndex + 1,
+                    AOINumber: areaIndex + 1,
                 });
-            },10);
+            }, 10);
         }
-        return ()=>{
+        return () => {
             if (a !== undefined) {
                 clearTimeout(a);
             }
         }
 
-    }, [isFocused, set_selAOI,pageIndex,areaIndex]);
+    }, [isFocused, set_selAOI, pageIndex, areaIndex]);
 
 
 
@@ -87,7 +87,7 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             e.stopPropagation();
-            const el=cropAreaRef.current?.resizableElement.current;
+            const el = cropAreaRef.current?.resizableElement.current;
             if (el && !el.contains(e.target as Node)) {
                 // quizDetailRef 외부를 클릭했을 때
                 setIsFocused(false);
@@ -105,20 +105,6 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
 
 
 
-    const handleQuizDetailUpdate = () => {
-        //불리언 리턴
-        console.log("handleQuizDetailUpdate");
-        //업뎃하면댐
-    }
-
-    const handleQuizDetailCancel = () => {
-        //불리언리턴
-
-        console.log("handleQuizDetailCancel");
-        //취소하면댐
-    }
-
-
     const handleChangeEditMode = useCallback((editMode: boolean) => {
         // console.log("editMode바뀜", editMode)
         set_editMode(editMode);
@@ -126,73 +112,51 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
 
 
 
-    //#@! psample 이란 변수를 지우고
-    // oneAOI만으로 가능한가?
-
-    // const [psample, setpsample] = useState({
-    //     width: oneAOI.width,
-    //     height: oneAOI.height,
-    //     left: oneAOI.x,
-    //     top: oneAOI.y,
-    // })
-
-
-    // useEffect(()=>{
-    //     console.log("@@허허허 다시 할당하는지 확인");
-    //     setpsample({
-    //         width: oneAOI.width,
-    //         height: oneAOI.height,
-    //         left: oneAOI.x,
-    //         top: oneAOI.y,
-    //     });
-    // },[oneAOI])
-
-
     const [cropRenderSize, setCropRenderSize] = useState({
-            width: oneAOI.width + "%",
-            height: oneAOI.height + "%",
-            x: containerRef.current ? oneAOI.x / 100 * containerRef.current.offsetWidth : 0,
-            y: containerRef.current ? oneAOI.y / 100 * containerRef.current.offsetHeight : 0,
+        width: oneAOI.width + "%",
+        height: oneAOI.height + "%",
+        x: containerRef.current ? oneAOI.x / 100 * containerRef.current.offsetWidth : 0,
+        y: containerRef.current ? oneAOI.y / 100 * containerRef.current.offsetHeight : 0,
     })
 
 
     //사이즈 변경시 이걸 호출하는데
     //문제가 prsample값이 바뀔때도 불필요하게 호출
-    useEffect(()=>{
+    useEffect(() => {
         if (!containerRef.current) return;
         const wrapEl = containerRef.current;
 
- 
+
 
         const resizeObserver = new ResizeObserver(entries => {
             // 크기 변경시 실행할 작업을 여기에 작성합니다.
-        entries.forEach((/*entry*/) => {
+            entries.forEach((/*entry*/) => {
                 // console.log("resize에따라서 실제 cropRenderSize재할당")
-            //   console.log('@@@@@@@@@@@@@@@@PDFDocument 껍데기의 크기가 변경되었습니다!', entry.contentRect.width, entry.contentRect.height);
-              // set_renderWidth(entry.contentRect.width * viewPercent / 100);
-              // const contentWidth = wrapEl.offsetWidth;
-              // const contentHeight = wrapEl.offsetHeight;
-              // debouncedResetContainerInform();
-              setCropRenderSize({
-                width: oneAOI.width + "%",
-                height: oneAOI.height + "%",
-                x: containerRef.current ? oneAOI.x * containerRef.current.offsetWidth / 100 : 0,
-                y: containerRef.current ? oneAOI.y * containerRef.current.offsetHeight / 100 : 0,
-              });
-              // handleTestLoad();
+                //   console.log('@@@@@@@@@@@@@@@@PDFDocument 껍데기의 크기가 변경되었습니다!', entry.contentRect.width, entry.contentRect.height);
+                // set_renderWidth(entry.contentRect.width * viewPercent / 100);
+                // const contentWidth = wrapEl.offsetWidth;
+                // const contentHeight = wrapEl.offsetHeight;
+                // debouncedResetContainerInform();
+                setCropRenderSize({
+                    width: oneAOI.width + "%",
+                    height: oneAOI.height + "%",
+                    x: containerRef.current ? oneAOI.x * containerRef.current.offsetWidth / 100 : 0,
+                    y: containerRef.current ? oneAOI.y * containerRef.current.offsetHeight / 100 : 0,
+                });
+                // handleTestLoad();
             });
-          });
+        });
 
         resizeObserver.observe(wrapEl);
         return () => {
             resizeObserver.disconnect();
-          }
+        }
 
-    },[containerRef,oneAOI])
+    }, [containerRef, oneAOI])
 
 
 
-    const backgroundColor = useMemo(()=>{
+    const backgroundColor = useMemo(() => {
         const { type } = oneAOI;
         let bc;
         if (type === 'MC') {
@@ -202,10 +166,10 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
             bc = "rgba(0,0,255,.3)";
         }
         return bc;
-    },[oneAOI])
-  
+    }, [oneAOI])
 
-    const handleOnResizeStop:RndResizeCallback =useCallback((e, direction, ref, delta, position) => {
+
+    const handleOnResizeStop: RndResizeCallback = useCallback((e, direction, ref, delta, position) => {
         const left = containerRef.current ? (position.x * 100 / containerRef.current.offsetWidth) : 0;
         const top = containerRef.current ? (position.y * 100 / containerRef.current.offsetHeight) : 0;
         setCropRenderSize({
@@ -217,14 +181,14 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
         // areaIndex,areaIndex
 
         // console.log("원래원본:",oneAOI);
-        const newAOI:Coordinate={
+        const newAOI: Coordinate = {
             ...oneAOI,
             width: parseFloat(ref.style.width),
             height: parseFloat(ref.style.height),
             x: left,
             y: top,
         }
-        onChangeOneAOI(newAOI,pageIndex,areaIndex);
+        onChangeOneAOI(newAOI, pageIndex, areaIndex);
 
         // setpsample({
         //     width: parseFloat(ref.style.width),
@@ -232,20 +196,20 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
         //     left: left,
         //     top: top,
         // });
-    },[containerRef,oneAOI,onChangeOneAOI,pageIndex,areaIndex]);
+    }, [containerRef, oneAOI, onChangeOneAOI, pageIndex, areaIndex]);
 
 
-    const handleOnDragStop:RndDragCallback= useCallback((e, d) => {
+    const handleOnDragStop: RndDragCallback = useCallback((e, d) => {
         // console.log("원래원본드래그끝:",oneAOI);
 
-        const newAOI:Coordinate={
+        const newAOI: Coordinate = {
             ...oneAOI,
             x: containerRef.current ? d.x * 100 / containerRef.current.offsetWidth : 0,
             y: containerRef.current ? d.y * 100 / containerRef.current.offsetHeight : 0,
         }
         // console.log("dragStop oneAOI",oneAOI)
         // console.log("dragStop newAOI:",newAOI);
-        onChangeOneAOI(newAOI,pageIndex,areaIndex);
+        onChangeOneAOI(newAOI, pageIndex, areaIndex);
 
         setCropRenderSize((bs) => {
             return {
@@ -256,7 +220,7 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
         });
 
 
-    },[containerRef,oneAOI,onChangeOneAOI,pageIndex,areaIndex]);
+    }, [containerRef, oneAOI, onChangeOneAOI, pageIndex, areaIndex]);
 
 
     //#@!#@!
@@ -264,7 +228,7 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
     //방향을 위치에 따라 할당해줘야함
 
     return (
-  
+
         <Rnd
             className="CropArea"
             ref={cropAreaRef}
@@ -278,13 +242,13 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
             maxHeight={"100%"}
             enableResizing={{
                 bottom: true,
-                bottomLeft:true,
-                bottomRight:true,
-                left:true,
-                right:true,
-                top:false,
-                topLeft:false,
-                topRight:false,
+                bottomLeft: true,
+                bottomRight: true,
+                left: true,
+                right: true,
+                top: false,
+                topLeft: false,
+                topRight: false,
             }}
             // minWidth={"5%"}
             // minHeight={"5%"}
@@ -299,25 +263,17 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
         >
             <div className={`CropAreaWrapper ${isFocused ? 'active-animatioon' : ''}`}>
                 {isFocused &&
-                    <div className="topAOIBar" style={{ opacity: 1 ,background:"purple",
-                        
-                    // pointerEvents: "none" // Prevents drag and other pointer events
-                     }} 
-          
-                     onMouseDown={(e) => {
-                        e.stopPropagation();
-                        // console.log("Mouse down on topAOIBar - dragging disabled");
+                    <div className="topAOIBar" style={{
+                        opacity: 1,
+
+                        // pointerEvents: "none" // Prevents drag and other pointer events
                     }}
-                        // disableDragging={true}
-                        // draggable={true}
 
-                        // onDragStart={e => {
-                        //     console.log("하아 못하게 막아줘");
-
-                        //     e.preventDefault();
-                        //     e.stopPropagation();
-                        // }} 
-                      >
+                        onMouseDown={(e) => {
+                            e.stopPropagation();
+                            // console.log("Mouse down on topAOIBar - dragging disabled");
+                        }}
+                    >
 
                         <div className="fixCropName">
                             <TextInput
@@ -328,7 +284,7 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
                                     if (onFixCropName) {
                                         onFixCropName(oneAOI, newFileName);
 
-                                        const el=cropAreaRef.current?.resizableElement.current;
+                                        const el = cropAreaRef.current?.resizableElement.current;
                                         el?.focus();
                                     }
                                 }}
@@ -338,7 +294,7 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
                                     }
                                 }}
                                 onCancel={() => {
-                                    const el=cropAreaRef.current?.resizableElement.current;
+                                    const el = cropAreaRef.current?.resizableElement.current;
                                     el?.focus();
                                 }}
 
@@ -349,16 +305,31 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
 
                         {!editMode &&
                             <>
+
                                 {oneAOI.type === 'MC'
-                                    && 
-                                        <QuizDetail oneAOI={oneAOI}
-                                        onQuizDetailChanged={handleQuizDetailUpdate}
-                                        handleQuizDetailCancel={handleQuizDetailCancel}
-                                    />}
+                                    &&
+                                    <>
+                                        <div className="quizShort">
+                                            <div>
+                                                Q:{oneAOI.quizOptionCount}
+                                            </div>
+                                            <div>
+                                                A:{oneAOI.correctAnswer===0?"X":oneAOI.correctAnswer}
+                                            </div>
+                                            <QuizDetail oneAOI={oneAOI}
+                                                onChangeOneAOI={onChangeOneAOI}
+                                                pageIndex={pageIndex}
+                                                areaIndex={areaIndex}
+                                  
+                                            />
+                                        </div>
+                                    </>
+                                }
 
                                 <div className="delCrop"
                                     onMouseDown={() => {
                                         // console.log("딜링트마우스다운")
+                                        
                                         if (onDeleteAOI) {
                                             onDeleteAOI(oneAOI)
                                         }

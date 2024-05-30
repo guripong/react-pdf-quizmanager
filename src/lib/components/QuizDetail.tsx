@@ -1,12 +1,15 @@
 
-import React,{ useState, useEffect, useRef, MouseEventHandler } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import type { ChangeEventHandler, MouseEventHandler } from "react"
 import quiz_detail from "../svg/quiz_detail2.svg";
-import { QuizDetailProps } from "lib/PDF_Quiz_Types";
+import { Coordinate, QuizDetailProps } from "lib/PDF_Quiz_Types";
 
-const QuizDetail: React.FC<QuizDetailProps> = ({ oneAOI, onQuizDetailChanged, handleQuizDetailCancel }) => {
+const QuizDetail: React.FC<QuizDetailProps> = (props) => {
     // console.log("oneAOI",oneAOI)
+    const { oneAOI,  areaIndex, pageIndex, onChangeOneAOI } = props;
+
     const [showQuizDetail, set_showQuizDetail] = useState<boolean>(false);
-    const [quizOptionCount, set_quizOptionCount] = useState<number | undefined>(oneAOI.quizOptionCount);
+
     const [correctAnswer, set_correctAnswer] = useState<number | undefined>(oneAOI.correctAnswer);
 
     const quizDetailRef = useRef<HTMLDivElement>(null);
@@ -25,20 +28,27 @@ const QuizDetail: React.FC<QuizDetailProps> = ({ oneAOI, onQuizDetailChanged, ha
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
+ 
 
-    const handleAdjust: MouseEventHandler<HTMLButtonElement> = () => {
-        if (onQuizDetailChanged) {
-            onQuizDetailChanged(showQuizDetail);
-        }
-        set_showQuizDetail(false);
-    };
 
-    const handleCancel: MouseEventHandler<HTMLButtonElement> = () => {
-        if (handleQuizDetailCancel) {
-            handleQuizDetailCancel(showQuizDetail);
+
+
+    const handleOnchangeQuizCount: ChangeEventHandler<HTMLSelectElement> | undefined = (e) => {
+
+        const newAOI:Coordinate={
+            ...oneAOI,
+            quizOptionCount:Number(e.target.value)
         }
-        set_showQuizDetail(false);
-    };
+        onChangeOneAOI(newAOI,pageIndex,areaIndex);
+    }
+
+    const handleOnchangeCorrectAnswer: ChangeEventHandler<HTMLSelectElement> | undefined = (e) => {
+        const newAOI:Coordinate={
+            ...oneAOI,
+            correctAnswer:Number(e.target.value)
+        }
+        onChangeOneAOI(newAOI,pageIndex,areaIndex);
+    }
 
 
     return (<div className="QuizDetail"
@@ -47,12 +57,11 @@ const QuizDetail: React.FC<QuizDetailProps> = ({ oneAOI, onQuizDetailChanged, ha
         <div className="quiz_icon" onClick={(e) => {
             e.stopPropagation(); // Stop event bubbling
             // console.log("클릭");
-            
+
             set_showQuizDetail(qd => !qd)
         }}>
             <img src={quiz_detail} alt="Quiz" />
         </div>
-
         {showQuizDetail &&
             <>
                 <div className="dropDown_qd">
@@ -60,8 +69,8 @@ const QuizDetail: React.FC<QuizDetailProps> = ({ oneAOI, onQuizDetailChanged, ha
                         보기수
                         <select
                             className="normalSelect"
-                            value={quizOptionCount}
-                            onChange={(e) => set_quizOptionCount(Number(e.target.value))}
+                            value={oneAOI.quizOptionCount}
+                            onChange={handleOnchangeQuizCount}
                         >
                             {[...Array(10).keys()].map((value) => (
                                 <option key={value + 1} value={value + 1}>
@@ -71,12 +80,23 @@ const QuizDetail: React.FC<QuizDetailProps> = ({ oneAOI, onQuizDetailChanged, ha
                         </select>
                     </div>
                     <div className="qd_row">
-                        correctAnswer:{correctAnswer}<br />
+                         정답
+                        <select
+                            className="normalSelect"
+                            value={oneAOI.correctAnswer}
+                            onChange={handleOnchangeCorrectAnswer}
+                        >
+                            <option value={0}>정답없음</option>
+                            {[...Array(10).keys()].map((value) => (
+                                <option key={value + 1} value={value + 1}>
+                                    {value + 1}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     <div className="qd_row">
-                        <button onMouseDown={handleAdjust}>적용</button>
-                        <button onMouseDown={handleCancel}>취소</button>
+                        <button onMouseDown={()=>set_showQuizDetail(false)}>확인</button>
                     </div>
                 </div>
                 <div className="dropDown_triangle" />
