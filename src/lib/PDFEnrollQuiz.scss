@@ -1,371 +1,429 @@
 $main-border-color: #145894;
 $main-border-color-70: #6b94b6;
-$topbar-height:50px;
+$topbar-height: 50px;
+
+
+$primary-color: #444;
+$border-color: #bdc3c7;
+$hover-border-color: darken($border-color, 10%);
+$hover-background-color: lighten($primary-color, 10%);
+$focus-outline-color: $primary-color;
+
 
 .PDFEnrollQuiz {
-    .no-drag {-ms-user-select: none; -moz-user-select: -moz-none; -webkit-user-select: none; -khtml-user-select: none; user-select:none;}
-
+    .no-drag {
+        -ms-user-select: none;
+        -moz-user-select: -moz-none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        user-select: none;
+    }
+    background:#383838;
     width: 100%;
     height: 100%;
     box-sizing: border-box;
     // display:flex;
     position:relative;
     overflow:hidden;
-    .PDFTopBar{
+
+    .PDFTopBar {
         // position:absolute;
-        height:$topbar-height;
-        width:100%;
-        left:0;
-        top:0;
-        background:#383838;
+        height: $topbar-height;
+        width: 100%;
+        left: 0;
+        top: 0;
+        background: #383838;
         box-sizing: border-box;
         border-bottom: 1px solid #222;
         box-shadow: 3px 1px 1px #444;
-        display:flex;
+        display: flex;
         justify-content: space-between;
         align-items: center;
-        color:#fff;
-        gap:10px;
-        position:relative;
-        .btnWrap{
-            margin:2px;
-            border-radius:50%;
-            width:37px;
-            height:37px;
+        color: #fff;
+        gap: 10px;
+        position: relative;
+
+        .btnWrap {
+            margin: 2px;
+            border-radius: 50%;
+            width: 37px;
+            height: 37px;
             // background:red;
-            display:flex;
+            display: flex;
             justify-content: center;
             align-items: center;
-            &:hover{
-                background:#555;
-                cursor:pointer;
+            cursor: pointer;
+            &:hover {
+                background: #555;
+                cursor: pointer;
             }
 
-            img{
-                fill:#fff;
+            img {
+                fill: #fff;
                 width: 25px;
                 height: 25px;
+                cursor: pointer;
             }
         }
-        .AOI_mode_btn{
-            margin:2px;
-            border-radius:2%;
-            width:60px;
-            height:37px;
+
+        .AOI_mode_btn {
+            margin: 2px;
+            border-radius: 2%;
+            width: 60px;
+            height: 37px;
             // background:red;
-            display:flex;
+            display: flex;
             justify-content: center;
             align-items: center;
-            border:none;
+            border: none;
             box-sizing: border-box;
             border: 1px solid #fff;
-            &:hover{
+
+            &:hover {
                 // background:#555;
-                cursor:pointer;
+                cursor: pointer;
                 opacity: 0.8;
             }
-     
-            &.MC{
+
+            &.MC {
                 // background:rgba(255,0,0,.3);
-          
-                &.selected{
-                    background:rgb(255,179,179);
-                    color:red;
-               
+
+                &.selected {
+                    background: rgb(255, 179, 179);
+                    color: red;
+
                 }
             }
+
             // &.Pic{
             //     // background:rgba(255,0,0,.3);
             //     &.selected{
             //         background:rgb(179,255,179);
             //         //#b3ffb3
             //         color:green;
-               
+
             //     }
             // }
-            &.SJ{
-    
-                &.selected{
-                    background:rgb(179,179,255);
-                    color:blue;
-               
+            &.SJ {
+
+                &.selected {
+                    background: rgb(179, 179, 255);
+                    color: blue;
+
                 }
             }
+
             // &:hover{
             //     color:#eee;
             // }
         }
-        .grayBar{
-            
-            height:16px;
-            width:1px;
-            background:gray;
+
+        .grayBar {
+
+            height: 16px;
+            width: 1px;
+            background: gray;
         }
-        .oneTab{
-            width:100%;
+
+        .oneTab {
+            width: 100%;
             // background:red;
             // height:25px;
-            height:100%;
-            display:flex;
+            height: 100%;
+            display: flex;
             justify-content: center;
             align-items: center;
-            font-size:12px;
-            &.flexstart{
+            font-size: 12px;
+
+            &.flexstart {
                 justify-content: flex-start;
             }
-            input{
-                font-size:12px;
-                outline:none;
-                border:none;
-                width:40px;
+
+            input {
+                font-size: 12px;
+                outline: none;
+                border: none;
+                width: 40px;
                 text-align: center;
-                color:#fff;
-                background-color:#111;
-                outline:none;
-                height:18px;
+                color: #fff;
+                background-color: #111;
+                outline: none;
+                height: 18px;
             }
+
             input::selection {
                 background-color: gray;
             }
         }
+
         // .oneTab.exceptLeft {
         //     position: absolute; // 왼쪽에 배치
         //     left:20px;
-            
+
         // }
     }
-    .PDFdynamicAllPage{
+
+    .PDFdynamicAllPage {
 
         height:calc(100% - #{$topbar-height});
         transition: width 300ms 300ms, margin-left 300ms 300ms;
-        display:flex;
+        display: flex;
         justify-content: center;
         align-items: center;
         box-sizing: border-box;
-      
 
 
-        .scrollDiv{
-            width:100%;
-            height:100%;
+
+        .scrollDiv {
+            width: 100%;
+            height: 100%;
             overflow-y: auto;
-            background:#b4b4b4;
+            background: #b4b4b4;
             // scrollbar-width: thin;
             // scrollbar-color: transparent transparent;
             box-sizing: border-box;
-            padding-bottom:30px;
+            padding-bottom: 30px;
             // &::-webkit-scrollbar {
             //     width: 0px; /* 스크롤바 너비 지정 */
             //     height:0px;
             // }
-        
+
             // &::-webkit-scrollbar-thumb {
             //     background-color: transparent; /* 스크롤바 색상 지정 */
             // }
-        
-            .onePageWrap{
+
+            .onePageWrap {
                 box-sizing: border-box;
-                display:flex;
+                display: flex;
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                .pageCanvasWrap{
+
+                .pageCanvasWrap {
                     box-sizing: border-box;
                     // border: 3px solid red;
-                    background:gray;
-                    position:relative;
-                    .onePageCanvas{
-                        margin:auto;
-                        width:100%;
-                        height:100%;
+                    background: gray;
+                    position: relative;
+
+                    .onePageCanvas {
+                        margin: auto;
+                        width: 100%;
+                        height: 100%;
                         box-sizing: border-box;
                     }
-                    .highQualityCanvasWrap{
-                        position:absolute;
-                        width:100%;
-                        height:100%;
-                        left:0;
-                        top:0;
+
+                    .highQualityCanvasWrap {
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+                        left: 0;
+                        top: 0;
                     }
-                    .AreaCanvasWrap{
-                        position:absolute;
-                        width:100%;
-                        height:100%;
-                        left:0;
-                        top:0;
-                        canvas{
-                            background:rgba(255,0,0,0.1);
+
+                    .AreaCanvasWrap {
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+                        left: 0;
+                        top: 0;
+
+                        canvas {
+                            background: rgba(255, 0, 0, 0.1);
                         }
-                
-                      
+
+
                     }
                 }
 
-              
+
             }
-            
+
         }
+
         // .scrollDiv::-webkit-scrollbar {
         //     display: none; /* Webkit 브라우저에서 스크롤바 감춤 */
         //   }
-          
+
         //   .scrollDiv::-webkit-scrollbar-thumb {
         //     display: none; /* Webkit 브라우저에서 스크롤바 썸 감춤 */
         //   }
     }
-    .PDFpreview{
+
+    .PDFpreview {
         height:calc(100% - #{$topbar-height});
         // top:$topbar-height;
-        color:#fff;
-        background:#383838;
+        color: #fff;
+        background: #383838;
         transition: left 300ms 300ms;
 
         box-sizing: border-box;
-        .onePreView{
-            height:100%;
-            display:flex;
+
+        .onePreView {
+            height: 100%;
+            display: flex;
             flex-direction: column;
             box-sizing: border-box;
-            .previewTitle{
-                display:flex;
-                
+
+            .previewTitle {
+                display: flex;
+
                 justify-content: flex-start;
-                padding-left:10px;
+                padding-left: 10px;
                 align-items: center;
-                height:30px;
-                font-size:11px;
+                height: 30px;
+                font-size: 11px;
                 // margin:5px;
-                color:#fff;
+                color: #fff;
                 box-sizing: border-box;
-                border-bottom:1px solid #555;
-                &:hover{
-                    cursor:pointer;
+                border-bottom: 1px solid #555;
+
+                &:hover {
+                    cursor: pointer;
                 }
-                &:focus{
-                    outline:1px solid blue;
+
+                &:focus {
+                    outline: 1px solid blue;
                 }
             }
-            .previewContents{
-                flex:1;
+
+            .previewContents {
+                flex: 1;
                 transition: max-height 0.4s;
                 overflow-y: auto;
-                border-bottom:1px solid #414141;
-                .pageAOIGroup{
+                border-bottom: 1px solid #414141;
+
+                .pageAOIGroup {
                     text-align: left;
-                    padding-left:15px;
-                    height:20px;
+                    padding-left: 15px;
+                    height: 20px;
                     font-size: 11px;
-                    display:flex;
+                    display: flex;
                     justify-content: flex-start;
                     align-items: center;
-                    &:hover{
-                        background:#444;
-                        cursor:pointer;
+
+                    &:hover {
+                        background: #444;
+                        cursor: pointer;
                     }
                 }
-                .oneAOI{
+
+                .oneAOI {
                     font-size: 11px;
                     text-align: left;
-                    padding-left:25px;
-                    height:20px;
+                    padding-left: 25px;
+                    height: 20px;
 
-                    display:flex;
+                    display: flex;
                     justify-content: flex-start;
                     align-items: center;
-                    cursor:pointer;
-                    .aoi_name{
-                        cursor:pointer;
+                    cursor: pointer;
+
+                    .aoi_name {
+                        cursor: pointer;
                         white-space: nowrap;
                         overflow: hidden;
                         text-overflow: ellipsis;
                     }
+
                     .floatRight {
-                        cursor:pointer;
+                        cursor: pointer;
                         white-space: nowrap;
-                        color:rgb(223, 223, 69);
-                        height:100%;
-                        font-size:10px;
-                        line-height:2;
+                        color: rgb(223, 223, 69);
+                        height: 100%;
+                        font-size: 10px;
+                        line-height: 2;
                         // padding-right:10px;
                         // margin:4px;
-                        padding:4px;
+                        padding: 4px;
                         margin-left: auto; // 이 부분이 추가되었습니다.
                     }
+
                     //preview 존
-                    .MC,.SJ{
+                    .MC,
+                    .SJ {
                         // width:18px;
-                        cursor:pointer;
+                        cursor: pointer;
                         white-space: nowrap;
-                        height:18px;
+                        height: 18px;
                         border-radius: 3%;
-                        font-size:9px;
-                        display:flex;
+                        font-size: 9px;
+                        display: flex;
                         justify-content: center;
                         align-items: center;
                         box-sizing: border-box;
                         border: 1px solid #fff;
 
-                        background:rgb(179,179,255);
-                        color:blue;
+                        background: rgb(179, 179, 255);
+                        color: blue;
                     }
-                    .MC{
-                        background:rgb(255,179,179);
-                        color:red;
+
+                    .MC {
+                        background: rgb(255, 179, 179);
+                        color: red;
                     }
+
                     // .pic{
                     //     background:rgb(179,255,179);
                     //     color:green;
                     // }
 
-                    &:hover{
-                        background:#444;
-                        cursor:pointer;
+                    &:hover {
+                        background: #444;
+                        cursor: pointer;
                     }
-                    &.focused{
-                        background:#666;
+
+                    &.focused {
+                        background: #666;
                     }
                 }
             }
 
         }
 
-        .onePageWrap{
+        .onePageWrap {
             box-sizing: border-box;
-            display:flex;
+            display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            .onePageCanvas{
-                margin:auto;
-                width:100%;
-                height:100%;
+       
+
+            .onePageCanvas {
+                margin: auto;
+                width: 100%;
+                height: 100%;
                 box-sizing: border-box;
+          
             }
-            .onePageBlur{
-                position:absolute;
-                width:100%;
-                height:100%;
-                left:0;
-                top:0;
-                background:rgba(0,0,0,.3);
-           
-                &:hover{
-                    background:rgba(0,0,0,.15);
+
+            .onePageBlur {
+                position: absolute;
+                cursor:pointer;
+                width: 100%;
+                height: 100%;
+                left: 0;
+                top: 0;
+                background: rgba(0, 0, 0, .3);
+
+                &:hover {
+                    background: rgba(0, 0, 0, .15);
                 }
-                &.selPage{
-                    background:none;
+
+                &.selPage {
+                    background: none;
                     outline: 5px solid #9eaedb;
-                    &:hover{
-                        background:rgba(255,255,255,.35);
+
+                    &:hover {
+                        background: rgba(255, 255, 255, .35);
                     }
                 }
             }
 
-            .pageNumberWrapper{
-                height:25px;
-                color:#fff;
-                font-size:.7rem;
-                display:flex;
+            .pageNumberWrapper {
+                height: 25px;
+                color: #fff;
+                font-size: .7rem;
+                display: flex;
                 justify-content: center;
                 align-items: flex-end;
 
@@ -376,7 +434,7 @@ $topbar-height:50px;
 
 
 
-    .PDFScroll{
+    .PDFScroll {
 
         width: 100%;
         height: calc(100% - #{$topbar-height});
@@ -385,10 +443,10 @@ $topbar-height:50px;
         justify-content: center;
         align-items: center;
         box-sizing: border-box;
-        
+
         .Page {
             margin: auto;
-          
+
             .PDFcanvas {
                 margin: auto;
                 // z-index: 1000;
@@ -398,26 +456,62 @@ $topbar-height:50px;
             }
         }
     }
-    //스크롤바 디자인
-    // &::-webkit-scrollbar {
-    //     width: 8px;
-    //     height: 8px;
-    //     background: $main-border-color;
-    // }
-
-    // &::-webkit-scrollbar-thumb {
-    //     // border-radius: 3.5px;
-    //     background-color: $main-border-color;
-
-    //     &:hover {
-    //         background-color: blue;
-    //     }
-    // }
-
-    // &::-webkit-scrollbar-track {
-    //     background: $main-border-color-70;
-    // }
 
 
-   
+    // normalBtn 스타일링
+    .normalBtn {
+        display: inline-block;
+        padding: 5px 10px;
+        font-size: 16px;
+        color: #fff;
+        background-color: $primary-color;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+
+        &:hover {
+            background-color: $hover-background-color;
+            transform: translateY(-2px);
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+
+        &:focus {
+            outline: 2px solid $focus-outline-color;
+            outline-offset: 2px;
+        }
+    }
+
+    // normalSelect 스타일링
+    .normalSelect {
+        padding: 10px;
+        font-size: 16px;
+        color: #333;
+        background-color: #fff;
+        border: 1px solid $border-color;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+        &:hover {
+            border-color: $hover-border-color;
+        }
+
+        &:focus {
+            outline: none;
+            border-color: $focus-outline-color;
+            box-shadow: 0 0 5px rgba($focus-outline-color, 0.5);
+        }
+
+        &:disabled {
+            background-color: #e0e0e0;
+            cursor: not-allowed;
+        }
+    }
+
+
+
 }

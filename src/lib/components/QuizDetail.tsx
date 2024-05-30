@@ -6,12 +6,9 @@ import { Coordinate, QuizDetailProps } from "lib/PDF_Quiz_Types";
 
 const QuizDetail: React.FC<QuizDetailProps> = (props) => {
     // console.log("oneAOI",oneAOI)
-    const { oneAOI,  areaIndex, pageIndex, onChangeOneAOI } = props;
+    const { oneAOI, areaIndex, pageIndex, onChangeOneAOI } = props;
 
     const [showQuizDetail, set_showQuizDetail] = useState<boolean>(false);
-
-    const [correctAnswer, set_correctAnswer] = useState<number | undefined>(oneAOI.correctAnswer);
-
     const quizDetailRef = useRef<HTMLDivElement>(null);
 
 
@@ -28,28 +25,34 @@ const QuizDetail: React.FC<QuizDetailProps> = (props) => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
- 
+
 
 
 
 
     const handleOnchangeQuizCount: ChangeEventHandler<HTMLSelectElement> | undefined = (e) => {
 
-        const newAOI:Coordinate={
+        const newAOI: Coordinate = {
             ...oneAOI,
-            quizOptionCount:Number(e.target.value)
+            quizOptionCount: Number(e.target.value)
         }
-        onChangeOneAOI(newAOI,pageIndex,areaIndex);
+        onChangeOneAOI(newAOI, pageIndex, areaIndex);
     }
 
     const handleOnchangeCorrectAnswer: ChangeEventHandler<HTMLSelectElement> | undefined = (e) => {
-        const newAOI:Coordinate={
+        const newAOI: Coordinate = {
             ...oneAOI,
-            correctAnswer:Number(e.target.value)
+            correctAnswer: Number(e.target.value)
         }
-        onChangeOneAOI(newAOI,pageIndex,areaIndex);
+        onChangeOneAOI(newAOI, pageIndex, areaIndex);
     }
-
+    const handleOnchangeSJAnswer : ChangeEventHandler<HTMLInputElement> | undefined = (e) => {
+        const newAOI: Coordinate = {
+            ...oneAOI,
+            correctAnswer: (e.target.value)
+        }
+        onChangeOneAOI(newAOI, pageIndex, areaIndex);
+    }
 
     return (<div className="QuizDetail"
         ref={quizDetailRef}
@@ -64,41 +67,77 @@ const QuizDetail: React.FC<QuizDetailProps> = (props) => {
         </div>
         {showQuizDetail &&
             <>
-                <div className="dropDown_qd">
-                    <div className="qd_row">
-                        보기수
-                        <select
-                            className="normalSelect"
-                            value={oneAOI.quizOptionCount}
-                            onChange={handleOnchangeQuizCount}
-                        >
-                            {[...Array(10).keys()].map((value) => (
-                                <option key={value + 1} value={value + 1}>
-                                    {value + 1}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="qd_row">
-                         정답
-                        <select
-                            className="normalSelect"
-                            value={oneAOI.correctAnswer}
-                            onChange={handleOnchangeCorrectAnswer}
-                        >
-                            <option value={0}>정답없음</option>
-                            {[...Array(10).keys()].map((value) => (
-                                <option key={value + 1} value={value + 1}>
-                                    {value + 1}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                {oneAOI.type === "MC" && <>
+                    <div className="dropDown_qd">
+                        <div className="qd_row">
+                            <div className="selectLabel">
+                                #보기 수
+                            </div>
+                            <select
+                                className="normalSelect"
+                                style={{ width: 130 }}
+                                value={oneAOI.quizOptionCount}
+                                onChange={handleOnchangeQuizCount}
+                            >
+                                {[...Array(10).keys()].map((value) => (
+                                    <option key={value + 1} value={value + 1}>
+                                        {value + 1}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="qd_row">
+                            <div className="selectLabel">
+                                #정답
+                            </div>
 
-                    <div className="qd_row">
-                        <button onMouseDown={()=>set_showQuizDetail(false)}>확인</button>
+                            <select
+                                className="normalSelect"
+                                style={{ width: 130 }}
+                                value={oneAOI.correctAnswer}
+                                onChange={handleOnchangeCorrectAnswer}
+                            >
+                                <option value={0}>정답없음</option>
+                                {[...Array(10).keys()].map((value) => (
+                                    <option key={value + 1} value={value + 1}>
+                                        {value + 1}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="qd_row">
+                            <button className="normalBtn" onMouseDown={() => set_showQuizDetail(false)}>확인</button>
+                        </div>
                     </div>
-                </div>
+                   
+                </>}
+
+                {oneAOI.type === "SJ" && <>
+                    <div className="dropDown_qd">
+                        
+                        <div className="qd_row">
+                            <div className="selectLabel">
+                                #정답
+                            </div>
+
+                            <input
+                                className="normalSelect"
+                                style={{ width: 130 }}
+                                value={oneAOI.correctAnswer}
+                                
+                                onChange={handleOnchangeSJAnswer}
+                            />
+ 
+                        </div>
+
+                        <div className="qd_row">
+                            <button className="normalBtn" onMouseDown={() => set_showQuizDetail(false)}>확인</button>
+                        </div>
+                    </div>
+                   
+                </>}
+
                 <div className="dropDown_triangle" />
             </>
 

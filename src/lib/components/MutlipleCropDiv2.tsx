@@ -108,6 +108,9 @@ const MultipleCropDiv2 = forwardRef<MultipleCropDivInstance, MultipleCropDivProp
         tempCoordinate.quizOptionCount = 4;
         tempCoordinate.correctAnswer = 0;
       }
+      else if(type==="SJ"){
+        tempCoordinate.correctAnswer = "";
+      }
       // console.log("tempCoordinate",tempCoordinate)
       // console.log("pointA",pointA)
       // console.log("pageAOIArr",pageAOIArr)

@@ -1,18 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import * as pdfjsLib from 'pdfjs-dist';
+import { PDFPageProxy } from "pdfjs-dist/types/display/api";
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js`;
-interface PDFPage {
-  getViewport: (params: { scale: number }) => any;
-  render: (params: any) => any;
-}
+
 
 interface UsePDFLoaderReturn {
-  pages: PDFPage[];
+  pages: PDFPageProxy[] | null;
+  maxPageNumber:number;
 }
 
 
 function usePDFLoader(path: string, PDFDocumentOnLoadCallback?: (numPages: number) => void): UsePDFLoaderReturn {
-  const [pages, setPages] = useState<PDFPage[]>([]);
+  const [pages, setPages] = useState<PDFPageProxy[] | null>(null);
 
 
     useEffect(() => {
@@ -25,17 +24,18 @@ function usePDFLoader(path: string, PDFDocumentOnLoadCallback?: (numPages: numbe
   
           const pdfInfo = pdf._pdfInfo;
           const pdfPageNumbers = pdfInfo.numPages;
-          const loadedPages = [];
+          const loadedPages: PDFPageProxy[] = [];
+
   
           for (let i = 1; i <= pdfPageNumbers; i++) {
-            const page = await pdf.getPage(i);
+            const page: PDFPageProxy= await pdf.getPage(i);
             loadedPages.push(page);
           }
           
           setPages(loadedPages);
-          // if(PDFDocumentOnLoadCallback){
-          //   PDFDocumentOnLoadCallback(pdfPageNumbers);
-          // }
+          if(PDFDocumentOnLoadCallback){
+            PDFDocumentOnLoadCallback(pdfPageNumbers);
+          }
 
         } catch (error) {
           // 오류 처리
@@ -44,10 +44,17 @@ function usePDFLoader(path: string, PDFDocumentOnLoadCallback?: (numPages: numbe
       }
   
       getPDFdocumentByPath();
-    }, [path]);
-    
-    console.log("usePDFLoader~~~")
-    return { pages };
+    }, [path,PDFDocumentOnLoadCallback]);
+    const maxPageNumber = useMemo(() => {
+      if (pages) {
+          return pages.length;
+      }
+      else {
+          return 0;
+      }
+  }, [pages])
+    // console.log("usePDFLoader~~~")
+    return { pages,maxPageNumber };
   }
 
   export default usePDFLoader;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import _ from "lodash";
 import "./PDFEnrollQuiz.scss";
-import * as pdfjsLib from 'pdfjs-dist';
+
 
 import PDFpreview from "./PDFpreview";
 import PDFTopBar from "./PDFTopbar";
@@ -16,14 +16,14 @@ import type {
     AOIProps
 } from './PDF_Quiz_Types';
 import type { PDFPageProxy, RenderParameters } from "pdfjs-dist/types/display/api";
-
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js`;
+import usePDFLoader from "./hooks/usePDFLoader";
 
 
 const PDFEnrollQuiz: React.FC<PDFEnrollQuizProps> = (props) => {
     const { className, AOI
         , pdfInform, option, path, PDFDocumentOnLoadCallback ,onCloseCallback ,onSaveCallback} = props;
 
+    const {pages,maxPageNumber}=usePDFLoader(path,PDFDocumentOnLoadCallback);
 
     const previewOption=useMemo(()=>{
         const defaultPreviewOption={
@@ -48,7 +48,7 @@ const PDFEnrollQuiz: React.FC<PDFEnrollQuizProps> = (props) => {
 
     const initFileName = pdfInform?.fileName || "임시파일이름";
 
-    const [pages, setPages] = useState<PDFPageProxy[]|null>(null);
+
     const documentRef = useRef<HTMLDivElement>(null);
     const dynamicAllPageRef = useRef<PDFdynamicAllPageInstance>(null);
 
@@ -75,14 +75,7 @@ const PDFEnrollQuiz: React.FC<PDFEnrollQuizProps> = (props) => {
     const [viewPercent, set_viewPercent] = useState(option?.pageViewOption?.initViewPercent ?? '100%');
     const [nowPage, set_nowPage] = useState<number>(1);
     const [fileName, set_fileName] = useState(initFileName);
-    const maxPageNumber = useMemo(() => {
-        if (pages) {
-            return pages.length;
-        }
-        else {
-            return 0;
-        }
-    }, [pages])
+
 
     //AreaList  AOI2차원배열 previewList를 default로 접어둠
     const [foldAOIList, set_foldAOIList] = useState(true);
@@ -124,37 +117,9 @@ const PDFEnrollQuiz: React.FC<PDFEnrollQuizProps> = (props) => {
     }, [maxPageNumber, AOI])
 
 
-
+    // const [pages, setPages] = useState<PDFPageProxy[]|null>(null);
     //path로 부터 PDF page들을 읽습니다 PDFPageProxy 타입으로.
-    useEffect(() => {
-        if (!path) return;
-        async function getPDFdocumentByPath() {
-            try {
-                const loadingTask = await pdfjsLib.getDocument(path);
-                const pdf = await loadingTask.promise;
-
-                const pdfInfo = pdf._pdfInfo;
-                const pdfPageNumbers = pdfInfo.numPages;
-                const loadedPages: PDFPageProxy[] = [];
-
-                for (let i = 1; i <= pdfPageNumbers; i++) {
-                    const page: PDFPageProxy = await pdf.getPage(i);
-                    loadedPages.push(page);
-                }
-
-                setPages(loadedPages);
-                if (PDFDocumentOnLoadCallback) {
-                    PDFDocumentOnLoadCallback(pdfPageNumbers);
-                }
-
-            } catch (error) {
-                // 오류 처리
-                console.error("PDF 로드 중 오류 발생:", error);
-            }
-        }
-        getPDFdocumentByPath();
-    }, [path, PDFDocumentOnLoadCallback]);
-
+   
 
 
     //하이퀄리티로 렌더해야할경우 사용됨

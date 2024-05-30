@@ -7,6 +7,7 @@ import { arraysAreEqual, findMaxIndex } from "./util/util";
 import MultipleCropDiv2 from "./components/MutlipleCropDiv2";
 import { produce } from 'immer';
 import { Scrollbars } from 'react-custom-scrollbars-2';
+import { ModalProvider } from "./hooks/useModal";
 
 interface ShouldRenderPageInform {
     pageNumber:number;
@@ -33,13 +34,14 @@ interface TempData {
 }
 
 interface VisibleInformation {
-    partVisibleRatio: number;
+
     pageNumber: number;
     pageHeight: number;
     scrollHeight: number;
     clientHeight: number;
     page_s: number;
     page_e: number;
+    partVisibleRatio: number;
     visibleMin: number;
     visibleMax: number;
     ps: number;
@@ -201,13 +203,14 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
             if (partVisible) {
                 if (firstPartVisibleInformation === null) {
                     firstPartVisibleInformation = {
-                        partVisibleRatio: partVisibleRatio,
+                    
                         pageNumber: i + 1,
                         pageHeight: onePageHeight,
                         scrollHeight: scrollHeight,
                         clientHeight: clientHeight,
                         page_s: hs + onePage.marginHeight,
                         page_e: hs + onePage.height + onePage.marginHeight,
+                        partVisibleRatio: partVisibleRatio,
                         visibleMin: visibleMin,
                         visibleMax: visibleMax,
                         ps: ps,
@@ -416,7 +419,7 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
 
 
 
-
+    //하나의 AOI정보 변경
     const handleChangeOneAOI = (oneAOI: Coordinate, p_i: number, a_i: number) => {
         // changejustOneAOI(pageIndex,)
         //pageIndex,
@@ -435,6 +438,7 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
 
     }
 
+    
     const PDFdynamicAllPageStyle = useMemo(() => {
         if (!previewOption?.wrapperStyle?.width) {
             return {};
@@ -450,7 +454,7 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
     // console.log("scrollDivRef.current.container",scrollDivRef.current?.container)
 
     return (
-
+        <ModalProvider>
         <div className="PDFdynamicAllPage" style={PDFdynamicAllPageStyle}>
             <Scrollbars className="scrollDiv" ref={scrollDivRef}
             onScroll={handleOnScroll} style={{width:"100%",height:"100%"}} >
@@ -534,7 +538,7 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
             </Scrollbars>
         </div>
 
-
+        </ModalProvider>
 
     )
 });

@@ -53,6 +53,7 @@ function App() {
       id: '5678',
       type: "SJ", //주관식 Subject
       name: "주관식(1-2)",
+      correctAnswer:"",
     }], //1번페이지  없는페이지는 자동생성
   ])
 
@@ -143,13 +144,16 @@ function App() {
         }}>내컴퓨터에서 찾기</button>
 
       <button onClick={handleOpenPreview}>
-        파일열기
+        (제작)파일열기
       </button>
       <button onClick={()=>{set_pdfURL("https://readerseye-quiz.s3.ap-northeast-2.amazonaws.com/published/3_1716436060677.pdf")}}>
-        임시url열기
+        (제작)임시url열기
       </button>
     </div>
     <br />
+    <div>
+      (테스트)파일열기
+    </div>
 
 
 
@@ -159,18 +163,14 @@ function App() {
     {pdfURL &&
       <div style={{ marginLeft: "5%", width: '90%', height: '700px', display: "flex", background: "#fff" }}>
         <PDFEnrollQuiz
-
           path={pdfURL}
-
           AOI={tempAOI}
           option={option}
-
           pdfInform={{
             fileName: pdfName
           }}
 
           PDFDocumentOnLoadCallback={handleDocumentLoadCallback}
-
           onCloseCallback={() => {
             set_pdfURL(prev => {
               if (prev) {

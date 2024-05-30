@@ -1,9 +1,8 @@
 import React,{ useState, useEffect, useRef , createRef, useCallback, useMemo
     // , useMemo, forwardRef, useImperativeHandle 
 } from "react";
-import * as pdfjsLib from 'pdfjs-dist';
 import { Coordinate, PDFPreviewProps } from "./PDF_Quiz_Types";
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js`;
+
 interface FoldSvgProps {
     isFold: boolean;
 }
@@ -269,6 +268,10 @@ const PDFpreview: React.FC<PDFPreviewProps> = (props) => {
                                         <div className="floatRight">
                                             {AOI_type==="MC"&&<>
                                             <span >{`Q:${oneAOI.quizOptionCount} A:${oneAOI.correctAnswer===0?'X':oneAOI.correctAnswer}`}</span>
+                                            </>
+                                            }
+                                            {AOI_type==="SJ"&&<>
+                                            <span >{`A:${oneAOI.correctAnswer===""?'X':oneAOI.correctAnswer}`}</span>
                                             </>
                                             }
                                         </div>

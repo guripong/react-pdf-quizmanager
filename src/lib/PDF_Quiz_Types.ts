@@ -71,7 +71,7 @@ interface Coordinate {
     type: string;
     name: string;
     quizOptionCount?: number;
-    correctAnswer?: number;
+    correctAnswer?: number | string;
 }
 
 interface PreRenderedPDFPage {

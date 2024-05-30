@@ -4,6 +4,7 @@ import TextInput from './TextInput';
 import QuizDetail from './QuizDetail';
 import { Coordinate, CropAreaInstance, CropAreaProps } from 'lib/PDF_Quiz_Types';
 import { Rnd, RndDragCallback, RndResizeCallback } from 'react-rnd';
+import { useModal } from 'lib/hooks/useModal';
 
 interface TextInputInstance {
     set_textEditMode: (value: boolean) => void
@@ -24,7 +25,7 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
 
     // console.log("oneAOI",oneAOI)
     // const [showQuizDetail, set_showQuizDetail] = useState(false);
-
+    const { showModal } = useModal();
     useImperativeHandle(ref, () => ({
         set_focusArea() {
             setIsFocused(true);
@@ -230,10 +231,12 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
     return (
 
         <Rnd
+
             className="CropArea"
             ref={cropAreaRef}
             style={{
                 background: backgroundColor, // 기본값 설정,
+                zIndex: `${isFocused ? 11 : 0}`
             }}
             size={{ width: cropRenderSize.width, height: cropRenderSize.height }}
             bounds={containerRef.current || undefined}
@@ -263,7 +266,7 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
         >
             <div className={`CropAreaWrapper ${isFocused ? 'active-animatioon' : ''}`}>
                 {isFocused &&
-                    <div className="topAOIBar" style={{
+                    <div className="topCropBar" style={{
                         opacity: 1,
 
                         // pointerEvents: "none" // Prevents drag and other pointer events
@@ -314,30 +317,57 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
                                                 Q:{oneAOI.quizOptionCount}
                                             </div>
                                             <div>
-                                                A:{oneAOI.correctAnswer===0?"X":oneAOI.correctAnswer}
+                                                A:{oneAOI.correctAnswer === 0 ? "X" : oneAOI.correctAnswer}
                                             </div>
-                                            <QuizDetail oneAOI={oneAOI}
-                                                onChangeOneAOI={onChangeOneAOI}
-                                                pageIndex={pageIndex}
-                                                areaIndex={areaIndex}
-                                  
-                                            />
+
                                         </div>
+                                        <QuizDetail oneAOI={oneAOI}
+                                            onChangeOneAOI={onChangeOneAOI}
+                                            pageIndex={pageIndex}
+                                            areaIndex={areaIndex}
+
+                                        />
+                                    </>
+                                }
+                                {oneAOI.type === 'SJ'
+                                    &&
+                                    <>
+                                        <div className="quizShort">
+                                            <div>
+                                                A:{oneAOI.correctAnswer === "" ? "X" : oneAOI.correctAnswer}
+                                            </div>
+                                        </div>
+                                        <QuizDetail oneAOI={oneAOI}
+                                            onChangeOneAOI={onChangeOneAOI}
+                                            pageIndex={pageIndex}
+                                            areaIndex={areaIndex}
+
+                                        />
                                     </>
                                 }
 
                                 <div className="delCrop"
                                     onMouseDown={() => {
-                                        // console.log("딜링트마우스다운")
-                                        
-                                        if (onDeleteAOI) {
-                                            onDeleteAOI(oneAOI)
-                                        }
-
+                                        // console.log("마우스다운")
+                                        showModal(
+                                            <div>
+                                                <h2>{`${oneAOI.name}`} 삭제</h2>
+                                                <p>지우시겠습니까?</p>
+                                            </div>,
+                                            () => {
+                                                if (onDeleteAOI) {
+                                                    onDeleteAOI(oneAOI)
+                                                }
+                                            },
+                                            () => {
+                                                console.log("삭제취소")
+                                            }
+                                        );
                                     }}
                                 >
                                     X
                                 </div>
+
                             </>
 
                         }
