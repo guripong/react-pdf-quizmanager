@@ -10,7 +10,7 @@ import {
 // import type { GPTableInstance, GPColumn, GPtableProps ,GPtableOption } from './lib';
 import "./App.scss"
 import type { Coordinate } from './lib/PDF_Quiz_Types';
-import { PDFEnrollQuiz } from './lib';
+import { PDFEnrollQuiz, PDFPlayQuiz } from './lib';
 // import { GPtable } from 'react-gptable';
 // import type { GPColumn, GPTableInstance } from 'react-gptable';
 // import "react-gptable/dist/style.css";
@@ -33,7 +33,7 @@ import { PDFEnrollQuiz } from './lib';
 function App() {
 
 
-  const [tempAOI,setTempAOI] = useState<Coordinate[][]>([
+  const [tempAOI, setTempAOI] = useState<Coordinate[][]>([
     [{
       x: 10,
       y: 10,
@@ -53,7 +53,7 @@ function App() {
       id: '5678',
       type: "SJ", //주관식 Subject
       name: "주관식(1-2)",
-      correctAnswer:"",
+      correctAnswer: "",
     }], //1번페이지  없는페이지는 자동생성
   ])
 
@@ -71,19 +71,19 @@ function App() {
   }, []);
 
 
-  
+
 
   const option = useMemo(() => {
     //pdf 고유의 사이즈를 무시, 현제의 width기준으로 랜더
     return {
-      pageViewOption:{
+      pageViewOption: {
         initViewPercent: '50%',
       },
-      previewOption:{
+      previewOption: {
         initLeftPreviewshow: true,
         pageMargin: 40, //preview 의 작은 PDF의 pagemargin
         wrapperStyle: { //PDF preview의 껍데기 width입니다
-          width:200,
+          width: 200,
           // outline:"5px solid red"
         }
       }
@@ -93,7 +93,7 @@ function App() {
 
 
 
-  const [pdfName,set_pdfName] = useState<string>("이것은PDF파일이름");
+  const [pdfName, set_pdfName] = useState<string>("이것은PDF파일이름");
 
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -110,7 +110,7 @@ function App() {
     const tmpfile = e.target.files[0];
     set_file(tmpfile);
   }
-  
+
   const handleOpenPreview = () => {
     if (!file) return;
     const logoURL = window.URL.createObjectURL(file);
@@ -124,11 +124,13 @@ function App() {
     });
   }
 
+  const [playURL, set_playURL] = useState<string>("");
+
 
   return (<div className="app" style={{ background: "#eee" }} >
     <div>
       {pdfURL}
-      <br/>
+      <br />
       {file && <> {`임시파일이름 : ${file.name}`} <button className="deletefilebtn" onClick={() => set_file(null)}>삭제</button></>}
       <input ref={fileRef} style={{ display: 'none' }}
         accept="application/pdf"
@@ -146,13 +148,15 @@ function App() {
       <button onClick={handleOpenPreview}>
         (제작)파일열기
       </button>
-      <button onClick={()=>{set_pdfURL("https://readerseye-quiz.s3.ap-northeast-2.amazonaws.com/published/3_1716436060677.pdf")}}>
+      <button onClick={() => { set_pdfURL("https://readerseye-quiz.s3.ap-northeast-2.amazonaws.com/published/3_1716436060677.pdf") }}>
         (제작)임시url열기
       </button>
     </div>
     <br />
     <div>
       (테스트)파일열기
+      <br />
+      <button onClick={() => set_playURL("https://readerseye-quiz.s3.ap-northeast-2.amazonaws.com/published/3_1716436060677.pdf")}>play urlAOI적용</button>
     </div>
 
 
@@ -182,7 +186,7 @@ function App() {
             });
           }}
 
-          onSaveCallback={(newAOI:Coordinate[][],newFileName:string)=>{
+          onSaveCallback={(newAOI: Coordinate[][], newFileName: string) => {
             setTempAOI(newAOI);
             set_pdfName(newFileName);
           }}
@@ -190,6 +194,35 @@ function App() {
         />
 
       </div>
+    }
+    {playURL &&
+      <div style={{ marginLeft: "5%", width: '90%', height: '700px', display: "flex", background: "#fff" }}>
+        <PDFPlayQuiz
+
+          path={pdfURL}
+          AOI={tempAOI}
+
+          PDFDocumentOnLoadCallback={handleDocumentLoadCallback}
+          onCloseCallback={() => {
+            set_playURL(prev => {
+              if (prev) {
+                console.log("메모리해제");
+                window.URL.revokeObjectURL(prev);
+                console.log("메모리해제끝");
+              }
+              return ""
+            });
+          }}
+
+          onSaveCallback={(newAOI: Coordinate[][]) => {
+            // setTempAOI(newAOI);
+            console.log("저장할newAOI", newAOI)
+          }}
+
+        />
+
+      </div>
+
     }
 
   </div>)

@@ -203,6 +203,23 @@ interface PDFdynamicAllPageInstance {
     moveTothePrevScroll: () => void;
 }
 
+interface PDFPlayQuizProps{
+
+    
+        path: string;
+    
+        AOI: Coordinate[][];
+    
+        // previewOption?: previewOption;
+
+        
+        PDFDocumentOnLoadCallback?: (pages: number) => void;
+        onCloseCallback?: ()=>void;
+        onSaveCallback?: (newAOI:Coordinate[][])=>void;
+        //onCloseCallback
+        //onPreviewCallback
+
+}
 export type { AOIProps,
     preparePage, PDFdynamicAllPageInstance,
     PercentPagesData, PDFdynamicAllPageProps,
@@ -212,4 +229,5 @@ export type { AOIProps,
     PercentPageDataType, 
     PDFEnrollQuizProps, PreRenderedPDFPage,
     PDFPreviewProps
+    ,PDFPlayQuizProps
 };

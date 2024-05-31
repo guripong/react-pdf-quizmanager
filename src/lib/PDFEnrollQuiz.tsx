@@ -15,7 +15,7 @@ import type {
     preparePage,
     AOIProps
 } from './PDF_Quiz_Types';
-import type { PDFPageProxy, RenderParameters } from "pdfjs-dist/types/display/api";
+import type { PDFPageProxy } from "pdfjs-dist/types/display/api";
 import usePDFLoader from "./hooks/usePDFLoader";
 
 
@@ -23,7 +23,7 @@ const PDFEnrollQuiz: React.FC<PDFEnrollQuizProps> = (props) => {
     const { className, AOI
         , pdfInform, option, path, PDFDocumentOnLoadCallback ,onCloseCallback ,onSaveCallback} = props;
 
-    const {pages,maxPageNumber}=usePDFLoader(path,PDFDocumentOnLoadCallback);
+    const {pages,maxPageNumber ,preparePage}=usePDFLoader(path,PDFDocumentOnLoadCallback);
 
     const previewOption=useMemo(()=>{
         const defaultPreviewOption={
@@ -121,74 +121,6 @@ const PDFEnrollQuiz: React.FC<PDFEnrollQuizProps> = (props) => {
     //path로 부터 PDF page들을 읽습니다 PDFPageProxy 타입으로.
    
 
-
-    //하이퀄리티로 렌더해야할경우 사용됨
-    const preparePage = useCallback<preparePage>((page, pageNumber, specificSize) => {
-        return new Promise(function (resolve, reject) {
-            const shouldPreparePage:PDFPageProxy = page;
-            if (!shouldPreparePage) {
-                reject({
-                    valid: false,
-                    msg: "해당 페이지가 존재하지 않음"
-                })
-                return;
-            }
-
-            //오리지날 PDF사이즈들
-            const pageOriginWidth = shouldPreparePage.view[2];
-            const pageOriginHeight = shouldPreparePage.view[3];
-
-
-
-            let myscale=1;
-            if (specificSize) {
-                myscale = specificSize / pageOriginWidth;
-            }
-       
-
-
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d', { willReadFrequently: true });
-            const viewport = shouldPreparePage.getViewport({ scale: myscale }); // 원하는 스케일로 조정
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
-            const renderContext: RenderParameters = {
-                canvasContext: context || {},
-                viewport: viewport,
-            };
-            // console.log("랜더컨택스 완료")
-            const resizeRatio = specificSize / viewport.width;
-
-            
-            shouldPreparePage.render(renderContext).promise.then(()=>{
-                resolve({
-                    valid: true,
-                    canvas: canvas,
-                    pageNumber: pageNumber,
-                    originScale: myscale,
-                    PDForiginSize: {
-                        width: pageOriginWidth,
-                        height: pageOriginHeight
-                    },
-                    canvasSize: {
-                        width: viewport.width,
-                        height: viewport.height
-                    },
-                    wrapperSize: {
-                        resizeRatio: resizeRatio,
-                        width: specificSize,
-                        height: viewport.height * resizeRatio
-                    },
-                })
-            });
-
-
-          
-        });
-
-
-    }, [])
-    
 
     //미리보기 페이지들 생성 가장우선..저해상도로 먼저 랜더
     //고정사이즈로 랜더 할까?
