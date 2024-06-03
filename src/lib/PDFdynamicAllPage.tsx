@@ -454,7 +454,7 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
     // console.log("scrollDivRef.current.container",scrollDivRef.current?.container)
 
     return (
-        <ModalProvider>
+
         <div className="PDFdynamicAllPage" style={PDFdynamicAllPageStyle}>
             <Scrollbars className="scrollDiv" ref={scrollDivRef}
             onScroll={handleOnScroll} style={{width:"100%",height:"100%"}} >
@@ -538,7 +538,7 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
             </Scrollbars>
         </div>
 
-        </ModalProvider>
+
 
     )
 });

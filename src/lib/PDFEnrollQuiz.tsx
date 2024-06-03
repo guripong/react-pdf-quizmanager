@@ -17,6 +17,7 @@ import type {
 } from './PDF_Quiz_Types';
 import type { PDFPageProxy } from "pdfjs-dist/types/display/api";
 import usePDFLoader from "./hooks/usePDFLoader";
+import { ModalProvider } from "./hooks/useModal";
 
 
 const PDFEnrollQuiz: React.FC<PDFEnrollQuizProps> = (props) => {
@@ -254,6 +255,7 @@ const PDFEnrollQuiz: React.FC<PDFEnrollQuizProps> = (props) => {
     
 
     return (<div className={`PDFEnrollQuiz ${className}`} ref={documentRef}>
+        <ModalProvider>
         {previewOption && preparedPreviewPages && percentPagesData ?
             <>
                 <PDFTopBar
@@ -316,6 +318,9 @@ const PDFEnrollQuiz: React.FC<PDFEnrollQuizProps> = (props) => {
                 <div className="LoadingScreen">Loading...</div>
             </>
         }
+
+        </ModalProvider>
+     
     </div>)
 }
 export default PDFEnrollQuiz;

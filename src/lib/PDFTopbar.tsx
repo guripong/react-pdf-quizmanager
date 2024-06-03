@@ -9,21 +9,22 @@ import MinusSvg from "./svg/minus-sign-of-a-line-in-horizontal-position-svgrepo-
 
 import PlusSvg from "./svg/plus-large-svgrepo-com.svg";
 import { PDFTopBarProps } from "./PDF_Quiz_Types";
+import { useModal } from "./hooks/useModal";
 
 
 const PDFTopBar: React.FC<PDFTopBarProps> = (props) => {
     const { dynamicAllPageRef, set_leftPreviewShow, handleChangeNowPage, viewPercent,
-         set_viewPercent, maxPageNumber, nowPage
-        , set_AOI_mode, AOI_mode, fileName, set_fileName ,onCloseCallback,handleOnSave} = props;
-
+        set_viewPercent, maxPageNumber, nowPage
+        , set_AOI_mode, AOI_mode, fileName, set_fileName, onCloseCallback, handleOnSave } = props;
+    const { showModal } = useModal();
     const handleDecreasePercent = useCallback(() => {
         set_viewPercent(v => parseInt(v) - 1 > 25 ? (parseInt(v) - 1) + '%' : v);
         if (dynamicAllPageRef && dynamicAllPageRef.current) {
             dynamicAllPageRef.current.moveTothePrevScroll();
         }
-    },[dynamicAllPageRef,set_viewPercent]);
+    }, [dynamicAllPageRef, set_viewPercent]);
 
-    const handleSetPercent = useCallback((v:string) => {
+    const handleSetPercent = useCallback((v: string) => {
         // console.log("handleSetPercent호출");
 
         set_viewPercent(v);
@@ -31,26 +32,43 @@ const PDFTopBar: React.FC<PDFTopBarProps> = (props) => {
             // console.log("호출~~")
             dynamicAllPageRef.current.moveTothePrevScroll();
         }
-    },[dynamicAllPageRef,set_viewPercent]);
+    }, [dynamicAllPageRef, set_viewPercent]);
 
     const handleIncreasePercent = useCallback(() => {
         set_viewPercent(v => parseInt(v) + 1 <= 100 ? (parseInt(v) + 1) + '%' : v);
         if (dynamicAllPageRef && dynamicAllPageRef.current) {
             dynamicAllPageRef.current.moveTothePrevScroll();
         }
-    },[dynamicAllPageRef,set_viewPercent]);
+    }, [dynamicAllPageRef, set_viewPercent]);
 
-    const handleToggleAOI = (num:number)=>{    
-            if(AOI_mode===num){
-                set_AOI_mode(0);
-            }
-            else{
-                
-                set_AOI_mode(num);
-            }
+    const handleToggleAOI = (num: number) => {
+        if (AOI_mode === num) {
+            set_AOI_mode(0);
+        }
+        else {
+
+            set_AOI_mode(num);
+        }
 
     }
 
+    const handleAskOneCloseCallback = () => {
+        showModal(
+            <div>
+                <h2>저장없이 종료</h2>
+                <p>저장 없이 종료하시겠습니까?</p>
+            </div>,
+            () => {
+                if (onCloseCallback) {
+                    onCloseCallback()
+                }
+            },
+            () => {
+                console.log("닫기취소")
+            }
+        );
+
+    }
     return (<div className="PDFTopBar no-drag">
         <div className="oneTab flexstart">
             <div className="btnWrap" onClick={() => {
@@ -63,10 +81,10 @@ const PDFTopBar: React.FC<PDFTopBarProps> = (props) => {
             <div style={{ marginLeft: 15 }}>
                 <TextInput
                     value={fileName}
-                    onChange={(newFileName:string) => {
+                    onChange={(newFileName: string) => {
                         set_fileName(newFileName)
                     }}
-                    onBlur={(newFileName)=>{
+                    onBlur={(newFileName) => {
                         set_fileName(newFileName)
                     }}
                 />
@@ -74,8 +92,8 @@ const PDFTopBar: React.FC<PDFTopBarProps> = (props) => {
         </div>
 
         <div className="oneTab">
-                <button className={`AOI_mode_btn MC ${AOI_mode===1?'selected':''}`} onClick={()=>handleToggleAOI(1)}>객관식</button>
-                <button className={`AOI_mode_btn SJ ${AOI_mode===2?'selected':''}`} onClick={()=>handleToggleAOI(2)}>주관식</button>
+            <button className={`AOI_mode_btn MC ${AOI_mode === 1 ? 'selected' : ''}`} onClick={() => handleToggleAOI(1)}>객관식</button>
+            <button className={`AOI_mode_btn SJ ${AOI_mode === 2 ? 'selected' : ''}`} onClick={() => handleToggleAOI(2)}>주관식</button>
         </div>
 
 
@@ -83,7 +101,7 @@ const PDFTopBar: React.FC<PDFTopBarProps> = (props) => {
             <NumberOnlyInput
                 style={{ width: '25px' }}
                 value={nowPage}
-                onChange={(val:number) => {
+                onChange={(val: number) => {
                     if (handleChangeNowPage) {
                         handleChangeNowPage(val);
                         if (dynamicAllPageRef && dynamicAllPageRef.current) {
@@ -119,11 +137,11 @@ const PDFTopBar: React.FC<PDFTopBarProps> = (props) => {
         </div>
 
 
-  
+
 
         <div className="oneTab">
             <button onClick={handleOnSave}>저장</button>
-            <button onClick={onCloseCallback}>닫기</button>
+            <button onClick={handleAskOneCloseCallback}>닫기</button>
         </div>
     </div>)
 }

@@ -35,21 +35,21 @@ function App() {
 
   const [tempAOI, setTempAOI] = useState<Coordinate[][]>([
     [{
-      x: 10,
-      y: 10,
-      width: 10,
+      x: 6,
+      y: 32,
+      width: 33,
       height: 10,
       id: '1234',
       type: "MC", // 객관식 Multiple Choice
       name: "객관식(1-1)",
-      quizOptionCount: 4, //(1~10 선택가능)
+      quizOptionCount: 3, //(1~10 선택가능)
       correctAnswer: 1, //1번이 정답    0번은 정답없음
 
     }, {
-      x: 40,
-      y: 40,
-      width: 10,
-      height: 10,
+      x: 6,
+      y: 43,
+      width: 42,
+      height: 14,
       id: '5678',
       type: "SJ", //주관식 Subject
       name: "주관식(1-2)",
@@ -126,7 +126,7 @@ function App() {
 
   const [playURL, set_playURL] = useState<string>("");
 
-
+  // console.log("tempAOI",tempAOI)
   return (<div className="app" style={{ background: "#eee" }} >
     <div>
       {pdfURL}
@@ -196,10 +196,10 @@ function App() {
       </div>
     }
     {playURL &&
-      <div style={{ marginLeft: "5%", width: '90%', height: '700px', display: "flex", background: "#fff" }}>
+      <div style={{  width: '100%', height: '100%',left:0,top:0,position:"fixed", display: "flex", background: "#fff" }}>
         <PDFPlayQuiz
 
-          path={pdfURL}
+          path={playURL}
           AOI={tempAOI}
 
           PDFDocumentOnLoadCallback={handleDocumentLoadCallback}

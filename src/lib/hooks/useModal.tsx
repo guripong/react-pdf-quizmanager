@@ -1,8 +1,18 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import "./Modal.scss";
+import FloatingBtns from 'lib/pdfplayquiz/FloatingBtns';
+import { floatingProps } from 'lib/PDF_Quiz_Types';
 interface ModalContextType {
-  showModal: (content: ReactNode, onConfirm?: () => void, onCancel?: () => void) => void;
+  showModal: (content: ReactNode, 
+    onConfirm?: () => void,
+    onCancel?: () => void,
+    btnNameArr?: string[]
+  ) => void,
+  
+
   hideModal: () => void;
+  showDefaultModal: (obj: floatingProps) => void;
+
 }
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
@@ -20,23 +30,37 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [content, setContent] = useState<ReactNode | null>(null);
   const [onConfirm, setOnConfirm] = useState<(() => void) | null>(null);
   const [onCancel, setOnCancel] = useState<(() => void) | null>(null);
-    console.log("랜더");
-  const showModal = (content: ReactNode, 
-    onConfirm?: () => void, 
-    onCancel?: () => void) => {
+  // console.log("랜더onConfirm",onConfirm);
 
-    setContent(content);
+  const [btnNameArr,set_btnNameArr] = useState<string[] | null>(null);
+
+
+  const showDefaultModal = (obj: floatingProps) => {
+
     setOnConfirm(() => onConfirm || null);
     setOnCancel(() => onCancel || null);
+    setIsVisible(true);
+  }
+
+  const showModal = (content: ReactNode,
+    confirmAction?: () => void,
+    cancelAction?: () => void,
+    btnNameArr?:string[]) => {
+    set_btnNameArr(btnNameArr || null);
+    setContent(content);
+    setOnConfirm(() => confirmAction || null);
+    setOnCancel(() => cancelAction || null);
     setIsVisible(true);
 
   };
 
   const hideModal = () => {
+
     setIsVisible(false);
     setContent(null);
     setOnConfirm(null);
     setOnCancel(null);
+    set_btnNameArr(null);
   };
 
   const handleOverlayClick = (e: React.MouseEvent) => {
@@ -47,28 +71,40 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       hideModal();
     }
   };
+  // console.log("showDefault", showDefault)
+  const contextValue: ModalContextType = {
+    // 다른 함수들...
+    showModal, hideModal, showDefaultModal 
+
+  };
 
   return (
-    <ModalContext.Provider value={{ showModal, hideModal }}>
+    <ModalContext.Provider value={contextValue}>
       {children}
-      {isVisible && content && (
+
+
+
+      {isVisible && (content) && (
         <div className="modal-overlay" onClick={handleOverlayClick}>
-          <div className="modal">
+          <div className="modal" style={{
+            padding:content?"20px":""
+          }}>
             <div className="modal-content">
               {content}
             </div>
             <div className="modal-actions">
               {onConfirm && (
-                <button onClick={() => { 
-                    onConfirm();
-                     hideModal(); 
-                }} className="modal-button confirm">네</button>
+                <button onClick={() => {
+                  onConfirm();
+                  hideModal();
+                }} className="modal-button confirm">
+                  {btnNameArr&&btnNameArr[0]?btnNameArr[0]:'네'}</button>
               )}
               {onCancel && (
-                <button onClick={() => { 
-                    onCancel(); 
-                    hideModal(); 
-                }} className="modal-button cancel">아니요</button>
+                <button onClick={() => {
+                  onCancel();
+                  hideModal();
+                }} className="modal-button cancel"> {btnNameArr&&btnNameArr[1]?btnNameArr[1]:'아니요'}</button>
               )}
             </div>
           </div>

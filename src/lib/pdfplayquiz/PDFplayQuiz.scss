@@ -1,0 +1,219 @@
+
+$primary-color: #444;
+$border-color: #bdc3c7;
+$hover-border-color: darken($border-color, 10%);
+$hover-background-color: lighten($primary-color, 10%);
+$focus-outline-color: $primary-color;
+
+
+
+.PDFPlayQuiz{
+    display:flex;
+    background:pink;
+    width:100%;
+    height:100%;
+    
+    .floating_status{
+        position:fixed;
+        top:4%;
+        left:calc(50% - 100px);
+        width:200px;
+        background:rgba(0,0,0,.4);
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        border:1px solid #fff;
+        border-radius: 5px;
+        font-size:3rem;
+        color:white;
+        cursor:pointer;
+        &:hover{
+            background:rgba(0,0,0,.5); 
+        }
+      }
+      .floating_right{
+        position:fixed;
+        top:35%;
+        right:2%;
+        width:80px;
+        height:30%;
+        background:rgba(0,0,0,.4);
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        border:1px solid #fff;
+        border-radius: 5px;
+        font-size:3rem;
+        color:white;
+        cursor:pointer;
+        &:hover{
+            background:rgba(0,0,0,.5); 
+        }
+      }
+      .floating_left{
+        position:fixed;
+        top:35%;
+        left:2%;
+        width:80px;
+        height:30%;
+        background:rgba(0,0,0,.4);
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        border:1px solid #fff;
+        border-radius: 5px;
+        font-size:3rem;
+        color:white;
+        cursor:pointer;
+        &:hover{
+            background:rgba(0,0,0,.5); 
+        }
+      }
+      .floating_down{
+        position:fixed;
+        bottom:4%;
+        left:calc(50% - 100px);
+        width:200px;
+        background:rgba(0,0,0,.4);
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        border:1px solid #fff;
+        border-radius: 5px;
+        font-size:3rem;
+        color:white;
+        cursor:pointer;
+        &:hover{
+            background:rgba(0,0,0,.5); 
+        }
+      }
+
+  
+    .centerView{
+        width:100%;
+        height:100%;
+        position:relative;
+        .leftBtn{
+            position:absolute;
+
+        }
+        .nowPage {
+            width:100%;
+            height:100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            .pageCanvasWrap {
+                box-sizing: border-box;
+                // border: 3px solid red;
+                background: gray;
+                position: relative;
+
+                //실제 pdf가 여기에
+                .onePageCanvas {
+                    margin: auto;
+                    width: 100%;
+                    height: 100%;
+                    box-sizing: border-box;
+                }
+
+       
+                .nowPageAOI {
+                    position: absolute;
+                    width: 100%;
+                    height: 100%;
+                    left: 0;
+                    top: 0;
+                    .AOIWrap{
+                        position:relative;
+                        width:100%;
+                        height:100%;
+                        .OneQuiz{
+
+                            .oneQuizRelativeWrap{
+                                position:relative;
+                                width:100%;
+                                height:100%;
+                                .choosedAnswer{
+                                    position:absolute;
+                                    right:10px;
+                                    bottom:4px;
+                                    font-size:40px;
+                                    color:rgb(101, 199, 101);
+
+                                }
+                            }
+                        }
+                    }
+                    canvas {
+                        background: rgba(255, 0, 0, 0.1);
+                    }
+
+
+                }
+            }
+
+
+        }
+    }
+
+    
+    // normalBtn 스타일링
+    .normalBtn {
+        display: inline-block;
+        width:100%;
+        padding: 5px 10px;
+        font-size: 16px;
+        color: #fff;
+        background-color: $primary-color;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+
+        &:hover {
+            background-color: $hover-background-color;
+            transform: translateY(-2px);
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+
+        &:focus {
+            outline: 2px solid $focus-outline-color;
+            outline-offset: 2px;
+        }
+    }
+
+    // normalSelect 스타일링
+    .normalSelect {
+        padding: 10px;
+        width:100%;
+        font-size: 16px;
+        color: #333;
+        background-color: #fff;
+        border: 1px solid $border-color;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+        &:hover {
+            border-color: $hover-border-color;
+        }
+
+        &:focus {
+            outline: none;
+            border-color: $focus-outline-color;
+            box-shadow: 0 0 5px rgba($focus-outline-color, 0.5);
+        }
+
+        &:disabled {
+            background-color: #e0e0e0;
+            cursor: not-allowed;
+        }
+    }
+}

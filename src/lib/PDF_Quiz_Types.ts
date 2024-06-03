@@ -72,6 +72,7 @@ interface Coordinate {
     name: string;
     quizOptionCount?: number;
     correctAnswer?: number | string;
+    answer?:number | string;
 }
 
 interface PreRenderedPDFPage {
@@ -153,7 +154,7 @@ interface MultipleCropDivProps {
 
 
 interface CropAreaProps {
-    containerRef:React.RefObject<any>//#@!#@!
+    containerRef:React.RefObject<HTMLDivElement>//#@!#@!
     onFixCropName?: (coordinate: Coordinate, newName: string) => void;
     set_selAOI: React.Dispatch<React.SetStateAction<AOIProps|null>>;
     // set_selAOI?: (selectedAOI: { pageNumber: number; AOINumber: number } | null) => void
@@ -212,7 +213,7 @@ interface PDFPlayQuizProps{
     
         // previewOption?: previewOption;
 
-        
+      
         PDFDocumentOnLoadCallback?: (pages: number) => void;
         onCloseCallback?: ()=>void;
         onSaveCallback?: (newAOI:Coordinate[][])=>void;
@@ -220,7 +221,15 @@ interface PDFPlayQuizProps{
         //onPreviewCallback
 
 }
-export type { AOIProps,
+interface floatingProps{
+    nowPage:number;
+    maxPageNumber:number;
+    handleChangePage:(direction:string)=>void;
+    onCloseCallback?:()=>void;
+};
+
+export type { floatingProps,
+    AOIProps,
     preparePage, PDFdynamicAllPageInstance,
     PercentPagesData, PDFdynamicAllPageProps,
     MultipleCropDivInstance, CropAreaInstance,
