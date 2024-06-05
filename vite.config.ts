@@ -57,7 +57,7 @@ export default defineConfig({
     sourcemap: true,
     lib: {
       entry: path.resolve(__dirname, "src/lib/index.ts"), //라이브러리 진입점, 제공하고자하는 컴포넌트를 모두 export하는 부분
-      name: "react-gptable",
+      name: "react-pdf-quizmanager",
       // formats: ["es", "cjs", "umd", "iife"],
       formats: ["es", "cjs"],
       fileName: (format) => `index.${format}.js`,

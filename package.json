@@ -59,6 +59,7 @@
     "react": ">= 17",
     "react-custom-scrollbars-2": "^4.5.0",
     "react-dom": ">= 17",
+    "react-pdf-quizmanager": "^1.0.3",
     "react-rnd": "^10.4.11",
     "react-zoom-pan-pinch": "^3.4.4",
     "shortid": "^2.2.16",

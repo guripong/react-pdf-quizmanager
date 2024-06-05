@@ -1,23 +1,17 @@
 
 import React, { useMemo, useRef, useState } from 'react';
-import {
-  useCallback
-  // , useEffect, useMemo, useRef, useState 
-} from 'react';
+import { useCallback } from 'react';
 
-
-// import { GPtable, IndeterminateCheckbox } from './lib';
-// import type { GPTableInstance, GPColumn, GPtableProps ,GPtableOption } from './lib';
 import "./App.scss"
-import type { Coordinate, PDFPlayQuizProps } from './lib/PDF_Quiz_Types';
-import { PDFEnrollQuiz, PDFPlayQuiz } from './lib';
+// import type { Coordinate, PDFPlayQuizProps } from './lib/PDF_Quiz_Types';
+// import { PDFEnrollQuiz, PDFPlayQuiz } from './lib';
+import { PDFEnrollQuiz, PDFPlayQuiz } from 'react-pdf-quizmanager';
+import type { Coordinate, PDFPlayQuizProps } from 'react-pdf-quizmanager';
+import "react-pdf-quizmanager/dist/style.css";
+
 // import { GPtable } from 'react-gptable';
 // import type { GPColumn, GPTableInstance } from 'react-gptable';
 // import "react-gptable/dist/style.css";
-
-// ESM
-// import { faker } from '@faker-js/faker';
-// import { sample } from 'lodash';
 
 
 
@@ -124,8 +118,8 @@ function App() {
     });
   }
 
-  const [playOption,set_playOption] = useState<PDFPlayQuizProps |null>(null);
-  
+  const [playOption, set_playOption] = useState<PDFPlayQuizProps | null>(null);
+
   // console.log("tempAOI",tempAOI)
   return (<div className="app" style={{ background: "#eee" }} >
     <div>
@@ -157,9 +151,9 @@ function App() {
       (테스트)파일열기
       <br />
       <button onClick={() => set_playOption({
-        path:"https://readerseye-quiz.s3.ap-northeast-2.amazonaws.com/published/3_1716436060677.pdf",
-        AOI:tempAOI
-        })}>play urlAOI적용</button>
+        path: "https://readerseye-quiz.s3.ap-northeast-2.amazonaws.com/published/3_1716436060677.pdf",
+        AOI: tempAOI
+      })}>play urlAOI적용</button>
     </div>
 
 
@@ -167,9 +161,9 @@ function App() {
 
 
 
-    {pdfURL&&
+    {pdfURL &&
       <div style={{ marginLeft: "5%", width: '90%', height: '700px', display: "flex", background: "#fff" }}>
-          {/* // <div style={{  width: '100%', height: '100%',left:0,top:0,position:"fixed", display: "flex", background: "#fff" }}> */}
+        {/* // <div style={{  width: '100%', height: '100%',left:0,top:0,position:"fixed", display: "flex", background: "#fff" }}> */}
         <PDFEnrollQuiz
           path={pdfURL}
           AOI={tempAOI}
@@ -179,7 +173,7 @@ function App() {
           }}
 
           PDFDocumentOnLoadCallback={handleDocumentLoadCallback}
-    
+
 
           onCloseCallback={() => {
             set_pdfURL(prev => {
@@ -204,17 +198,17 @@ function App() {
 
 
     {playOption &&
-      <div style={{  width: '100%', height: '100%',left:0,top:0,position:"fixed", display: "flex", background: "#fff" }}>
+      <div style={{ width: '100%', height: '100%', left: 0, top: 0, position: "fixed", display: "flex", background: "#fff" }}>
         <PDFPlayQuiz
 
           path={playOption.path}
           AOI={playOption.AOI}
 
-          PDFDocumentOnLoadCallback={()=>{
+          PDFDocumentOnLoadCallback={() => {
 
           }}
           onCloseCallback={() => {
-            set_playOption((prev:PDFPlayQuizProps | null) => {
+            set_playOption((prev: PDFPlayQuizProps | null) => {
               if (prev) {
                 console.log("메모리해제");
                 window.URL.revokeObjectURL(prev.path);
