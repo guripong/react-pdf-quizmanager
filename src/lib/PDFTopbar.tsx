@@ -13,7 +13,7 @@ import { useModal } from "./hooks/useModal";
 
 
 const PDFTopBar: React.FC<PDFTopBarProps> = (props) => {
-    const { dynamicAllPageRef, set_leftPreviewShow, handleChangeNowPage, viewPercent,
+    const { handleOpenPreview,dynamicAllPageRef, set_leftPreviewShow, handleChangeNowPage, viewPercent,
         set_viewPercent, maxPageNumber, nowPage
         , set_AOI_mode, AOI_mode, fileName, set_fileName, onCloseCallback, handleOnSave } = props;
     const { showModal } = useModal();
@@ -51,7 +51,13 @@ const PDFTopBar: React.FC<PDFTopBarProps> = (props) => {
         }
 
     }
+    
+    const handleOpenPreviewAtTopBar = ()=>{
+        if(handleOpenPreview){
+            handleOpenPreview();
+        }
 
+    }
     const handleAskOneCloseCallback = () => {
         showModal(
             <div>
@@ -141,6 +147,7 @@ const PDFTopBar: React.FC<PDFTopBarProps> = (props) => {
 
         <div className="oneTab">
             <button onClick={handleOnSave}>저장</button>
+            <button onClick={handleOpenPreviewAtTopBar}>미리보기</button>
             <button onClick={handleAskOneCloseCallback}>닫기</button>
         </div>
     </div>)

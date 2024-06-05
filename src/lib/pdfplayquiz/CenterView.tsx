@@ -1,22 +1,17 @@
 
 import { produce } from 'immer';
-import type { Coordinate, PDFPlayQuizProps, PreRenderedPDFPage, floatingProps } from 'lib/PDF_Quiz_Types';
+import type { Coordinate, PDFPlayQuizProps, PreRenderedPDFPage } from 'lib/PDF_Quiz_Types';
 import usePDFLoader from 'lib/hooks/usePDFLoader';
 import { PDFPageProxy } from 'pdfjs-dist/types/display/api';
-import React, { createContext, useContext, useState, ReactNode, useRef, useEffect, useMemo } from 'react';
-import Scrollbars from 'react-custom-scrollbars-2';
+import React, {  useState, useRef, useEffect, useMemo } from 'react';
+// import Scrollbars from 'react-custom-scrollbars-2';
 import OneQuiz from './OneQuiz';
 import { useModal } from 'lib/hooks/useModal';
 import FloatingBtns from './FloatingBtns';
-import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import Loading from 'lib/components/loading/Loading';
 
-const PanningInteractionHandler = (instance: any, state: any) => {
-    if (state?.positionX >= 0 && state?.positionY >= 0 && state?.scale <= 1) {
-        instance.setup.panning.disabled = true;
-    } else {
-        instance.setup.panning.disabled = false;
-    }
-};
+
 const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
     const { AOI, path, PDFDocumentOnLoadCallback,
         onCloseCallback
@@ -45,6 +40,8 @@ const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
         // const renderWidth=200;
 
         const wrapEl = PDFPlayQuizRef.current;
+        //#@! 리사이즈시 init view 필요
+
         const resizeObserver = new ResizeObserver(entries => {
             // 크기 변경시 실행할 작업을 여기에 작성합니다.
             entries.forEach((/*entry*/) => {
@@ -54,6 +51,8 @@ const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
                 // const contentWidth = wrapEl.offsetWidth;
                 // const contentHeight = wrapEl.offsetHeight;
                 // debouncedResetContainerInform();
+
+                // console.log("여기호출?")
                 prepareAllPage(pages, wrapEl.offsetWidth);
                 // handleTestLoad();
             });
@@ -91,7 +90,6 @@ const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
     const [tempAOI, set_tempAOI] = useState<Coordinate[][]>([]);
     useEffect(() => {
         const vacancy: Coordinate[][] = Array.from({ length: maxPageNumber }, () => []);
-        const initialHideAOIPageListArr: boolean[] = Array.from({ length: maxPageNumber }, () => true);
 
         if (AOI) {
             set_tempAOI(AOI);
@@ -114,7 +112,7 @@ const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
     // console.log("preparedPage", preparedPage)
 
     // console.log("tempAOI", tempAOI)
-    const scrollDivRef = useRef<Scrollbars>(null);
+    // const scrollDivRef = useRef<Scrollbars>(null);
 
 
     const handleChangePage = (direciton: string) => {
@@ -188,10 +186,21 @@ const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
 
 
 
+
+
+
+    const [isDragging, setIsDragging] = useState(false);
+    const [startPos, setStartPos] = useState({ x: 0, y: 0 });
     const [showPagination, set_showPagination] = useState(false);
     const handleSolveQuiz = (oneAOI: Coordinate, pageIndex: number, aoiIndex: number) => {
-        console.log("emfdjdhk")
-        set_showPagination(true);
+        console.log("handleSolveQuiz")
+
+        if (isDragging) {
+            setIsDragging(false);
+            return;
+
+        }
+        // set_showPagination(true);
 
         const btnNameArr: string[] = ["확인", "취소"];
         // handleChangeOneAOI
@@ -267,162 +276,168 @@ const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
         }
 
 
-        // set_tempAOI((prevTempAOI) => {
-        //     // console.log("prevTempAOI",prevTempAOI);
-        //     // console.log("oneAOI",oneAOI);
-        //     return produce(prevTempAOI, draft => {
-        //         if (oneAOI) {
-        //             draft[pageIndex][aoiIndex] = oneAOI;
-        //         }
-        //     });
 
-        //     // return prevTempAOI;
-        // });
 
     }
 
+    const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+        // console.log("마우스다운")
+        setStartPos({ x: e.clientX, y: e.clientY });
+    };
+
+    const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
+        const dx = Math.abs(e.clientX - startPos.x);
+        const dy = Math.abs(e.clientY - startPos.y);
+        const movementThreshold = 5; // Adjust the threshold as needed
+
+        if (dx < movementThreshold && dy < movementThreshold) {
+            // console.log("원클릭으로 판단");
+            set_showPagination(p => !p);
+            setIsDragging(false);
+            // showDefaultModal(floatingDefault);
+        } else {
+            // console.log("마우스업 - Drag detected");
+            setIsDragging(true);
+        }
+    };
+
+    // console.log("isDragging",isDragging)
+    return (<div className="centerView" ref={PDFPlayQuizRef}
+
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+    >
 
 
-    return (<div className="centerView" ref={PDFPlayQuizRef} onClick={(e) => {
-        e.stopPropagation();
-        console.log("여기는?");
-        set_showPagination(p => !p)
-        // showDefaultModal(floatingDefault);
-    }}>
-
-
-        {preparedNowPage &&
+        {preparedNowPage ?
             (
 
 
                 <TransformWrapper
-    
-                    // initialScale={innerFrameScale}
-                    // ref={transformWrapperRef}
-                    // centerOnInit={true}
-                    // centerZoomedOut={true}
-                    // onZoomStop={(ref) => {
+                    doubleClick={{disabled:true}}
+                    panning={{disabled:false
 
-                    //     // let a:ReactZoomPanPinchRef = ref;
-                    //     // let b = a.instance;
 
-                    //     PanningInteractionHandler(ref.instance, ref.state);
-                    // }}
-                    // onPanning={(ref) => {
-                    //     console.log("onPanning")
-                    //     PanningInteractionHandler(ref.instance, ref.state);
-                    // }}
-                    // onInit={(ref) => {
-                    //     ref.instance.setup.panning.disabled = true;
-                    // }}
+                    }}
 
-                // centerOnInit={true}
-                // maxScale={innerFrameScale}
-                // disablePadding={true}
-                // minScale={1}
-                // wheel={{ step: 0.1 }}
-                // pinch={{ step: 200 }}
-                // initialPositionX={0}
-                // initialPositionY={0}
-                // initialScale={1}
-                // initialPositionX={200}
-                // initialPositionY={100}
-                >
+                    onPanningStart={()=>{
+                        // console.log("시작")
+                    }}
+         
+                    >
+                    {() => {
+                        // console.log("preparedNowPage",preparedNowPage)
+                        return (<>
 
-                    {({ setTransform, zoomIn, zoomOut, resetTransform, ...rest }) => {
-                        console.log("preparedNowPage",preparedNowPage)
-                        return (
-                   
-                                <TransformComponent
-                         
-                                    wrapperStyle={{
-                                        width:`${PDFPlayQuizRef.current?.offsetWidth}px`,
-                                        height:`${PDFPlayQuizRef.current?.offsetHeight}px`,
-                                        // overflow:"scroll"
-                                    }}
-                                    contentStyle={{
-                                        background: '#C00000',
-                          
-                                        width: preparedNowPage.wrapperSize.width,
-                                        height: preparedNowPage.wrapperSize.height,
-                              
-                                        // width:`1000px`,
-                                        // height:`500px`,
-                                        // width:gazeRef.current.width,
-                                        // height:gazeRef.current.height,
-                                        // marginLeft:100,
+                            <TransformComponent
+                           
+                                wrapperStyle={{
+                                    width: `${PDFPlayQuizRef.current?.offsetWidth}px`,
+                                    height: `${PDFPlayQuizRef.current?.offsetHeight}px`,
+                                    // overflow:"scroll"
+                                }}
+                                contentStyle={{
+                                    background: '#C00000',
 
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        alignItems: 'center'
-                                    }}
+                                    width: preparedNowPage.wrapperSize.width,
+                                    height: preparedNowPage.wrapperSize.height,
 
-                                >
+                                    // width:`1000px`,
+                                    // height:`500px`,
+                                    // width:gazeRef.current.width,
+                                    // height:gazeRef.current.height,
+                                    // marginLeft:100,
 
-                                    <div className="pageCanvasWrap" style={{
-                                        position: 'relative',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center'
+                                }}
+
+                            >
+
+                                <div className="pageCanvasWrap" style={{
+                                    position: 'relative',
+                                    width: preparedNowPage.wrapperSize.width,
+                                    height: preparedNowPage.wrapperSize.height,
+                                }}>
+                                    <canvas
+                                        className="onePageCanvas"
+                                        style={{
+                                            width: '100%',
+                                            height: '100%'
+                                        }}
+                                        width={preparedNowPage.canvasSize.width} // Set the canvas width
+                                        height={preparedNowPage.canvasSize.height} // Set the canvas height
+
+                                        ref={(canvas: HTMLCanvasElement | null) => {
+                                            // console.log("onePage",onePage);
+                                            if (canvas && preparedNowPage.canvas) {
+                                                // Get the canvas's 2D rendering context
+                                                const context = canvas.getContext('2d');
+                                                // Draw the canvas content onto the canvas element
+                                                if (context) {
+                                                    context.drawImage(preparedNowPage.canvas, 0, 0);
+                                                }
+                                                // delete onePage.canvas;
+                                            }
+                                        }}
+
+                                    />
+                                    <div className="nowPageAOI" ref={AOIWrapperRef} style={{
+                                        position: "absolute",
+                                        left: 0,
+                                        top: 0,
                                         width: preparedNowPage.wrapperSize.width,
                                         height: preparedNowPage.wrapperSize.height,
                                     }}>
-                                        <canvas
-                                            className="onePageCanvas"
-                                            style={{
-                                                width: '100%',
-                                                height: '100%'
-                                            }}
-                                            width={preparedNowPage.canvasSize.width} // Set the canvas width
-                                            height={preparedNowPage.canvasSize.height} // Set the canvas height
-
-                                            ref={(canvas: HTMLCanvasElement | null) => {
-                                                // console.log("onePage",onePage);
-                                                if (canvas && preparedNowPage.canvas) {
-                                                    // Get the canvas's 2D rendering context
-                                                    const context = canvas.getContext('2d');
-                                                    // Draw the canvas content onto the canvas element
-                                                    if (context) {
-                                                        context.drawImage(preparedNowPage.canvas, 0, 0);
-                                                    }
-                                                    // delete onePage.canvas;
-                                                }
-                                            }}
-
-                                        />
-                                        <div className="nowPageAOI" ref={AOIWrapperRef} style={{
-                                            position:"absolute",
-                                            left:0,
-                                            top:0,
-                                            width: preparedNowPage.wrapperSize.width,
-                                            height: preparedNowPage.wrapperSize.height,
-                                        }}>
-                                            <div className="AOIWrap" >
-                                                {nowPageAOI &&
-                                                    nowPageAOI.map((oneAOI, i) => {
-                                                        const pageIndex = nowPage - 1;
-                                                        const aoiIndex = i;
-                                                        return (<OneQuiz
-                                                            handleSolveQuiz={handleSolveQuiz}
-                                                            onChangeOneAOI={handleChangeOneAOI}
-                                                            key={`OneQuiz_${pageIndex}_${aoiIndex}`}
-                                                            containerRef={AOIWrapperRef}
-                                                            pageIndex={pageIndex}
-                                                            aoiIndex={aoiIndex}
-                                                            oneAOI={oneAOI}
-                                                        />)
-                                                    })
-                                                }
-                                            </div>
-
+                                        <div className="AOIWrap" >
+                                            {nowPageAOI &&
+                                                nowPageAOI.map((oneAOI, i) => {
+                                                    const pageIndex = nowPage - 1;
+                                                    const aoiIndex = i;
+                                                    return (<OneQuiz
+                                                        handleSolveQuiz={handleSolveQuiz}
+                                                        onChangeOneAOI={handleChangeOneAOI}
+                                                        key={`OneQuiz_${pageIndex}_${aoiIndex}`}
+                                                        containerRef={AOIWrapperRef}
+                                                        pageIndex={pageIndex}
+                                                        aoiIndex={aoiIndex}
+                                                        oneAOI={oneAOI}
+                                                    />)
+                                                })
+                                            }
                                         </div>
 
                                     </div>
 
-                                </TransformComponent>
-                  
-                        )
+                                </div>
+
+                            </TransformComponent>
+
+                            
+                            {showPagination && <div style={{ background: "rgba(0,0,0,.3)", width: "100%", height: "100%", position: "fixed", left: 0, top: 0 }}>
+                                <FloatingBtns
+                                    nowPage={nowPage}
+                                    maxPageNumber={maxPageNumber}
+                                    handleChangePage={handleChangePage}
+
+                                    onCloseCallback={onCloseCallback}
+                                    showFloating={showPagination}
+                                />
+
+                            </div>
+                            }
+
+
+                        </>)
                     }}
                 </TransformWrapper>
 
             )
+            :
+            <>
+                <Loading/>
+            </>
         }
 
 
@@ -432,18 +447,7 @@ const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
 
 
 
-        {showPagination && <div style={{ background: "rgba(0,0,0,.3)", width: "100%", height: "100%", position: "fixed", left: 0, top: 0 }}>
-            <FloatingBtns
-                nowPage={nowPage}
-                maxPageNumber={maxPageNumber}
-                handleChangePage={handleChangePage}
 
-                onCloseCallback={onCloseCallback}
-                showFloating={showPagination}
-            />
-
-        </div>
-        }
 
     </div>)
 }

@@ -53,6 +53,7 @@ const MultipleCropDiv2 = forwardRef<MultipleCropDivInstance, MultipleCropDivProp
 
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    // e.stopPropagation();
     if (e.target === containerRef.current) {
       //컨테이너클릭시
       // console.log("클릭!")
@@ -68,6 +69,7 @@ const MultipleCropDiv2 = forwardRef<MultipleCropDivInstance, MultipleCropDivProp
 
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    // e.stopPropagation();
     if(!containerRef.current) return;
     const pointA = pointARef.current;
     if (!pointA) return;
@@ -269,6 +271,8 @@ const MultipleCropDiv2 = forwardRef<MultipleCropDivInstance, MultipleCropDivProp
     {containerInform && pageAOIArr && pageAOIArr.map((oneAOI, aoiIndex) => {
       // console.log("coordinate",coordinate)
       // console.log("cropAreaRefArr.current",cropAreaRefArr.current,"aoiIndex",aoiIndex)
+
+
       return (
         <CropArea2
           {...props}

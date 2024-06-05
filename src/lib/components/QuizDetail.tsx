@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from "react";
-import type { ChangeEventHandler, MouseEventHandler } from "react"
+import type { ChangeEventHandler } from "react"
 import quiz_detail from "../svg/quiz_detail2.svg";
 import { Coordinate, QuizDetailProps } from "lib/PDF_Quiz_Types";
 

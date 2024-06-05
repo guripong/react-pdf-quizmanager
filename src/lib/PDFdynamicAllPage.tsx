@@ -7,7 +7,7 @@ import { arraysAreEqual, findMaxIndex } from "./util/util";
 import MultipleCropDiv2 from "./components/MutlipleCropDiv2";
 import { produce } from 'immer';
 import { Scrollbars } from 'react-custom-scrollbars-2';
-import { ModalProvider } from "./hooks/useModal";
+
 
 interface ShouldRenderPageInform {
     pageNumber:number;
@@ -359,6 +359,7 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
     }, [percentPagesData, pages, preparePage, set_nowPage]);
 
     const handleOnScroll = useCallback(() => {
+
         changePercentPagesData();
     }, [changePercentPagesData]);
 
@@ -451,7 +452,7 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
 
 
 
-    // console.log("scrollDivRef.current.container",scrollDivRef.current?.container)
+
 
     return (
 

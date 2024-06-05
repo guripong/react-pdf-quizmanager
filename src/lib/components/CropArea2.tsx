@@ -18,16 +18,19 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
         onChangeOneAOI,
         containerRef, pageIndex, areaIndex,
         oneAOI, containerInform, onDeleteAOI } = props;
+        
     const [isFocused, setIsFocused] = useState(false);
     const cropAreaRef = useRef<Rnd>(null);
     const textInputRef = useRef<TextInputInstance>(null);
     const [editMode, set_editMode] = useState<boolean>(false);
-
+    // console.log(`${pageIndex}page의 ${areaIndex}isFocused`,isFocused)
     // console.log("oneAOI",oneAOI)
     // const [showQuizDetail, set_showQuizDetail] = useState(false);
     const { showModal } = useModal();
+
     useImperativeHandle(ref, () => ({
         set_focusArea() {
+
             setIsFocused(true);
             const el = cropAreaRef.current?.resizableElement.current;
             el?.scrollIntoView({ block: 'center' });
@@ -84,10 +87,11 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
 
 
 
-    //AOI밖에 클릭시.. AOI focus를 풀어줍니다.
+    // AOI밖에 클릭시.. AOI focus를 풀어줍니다.
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
-            e.stopPropagation();
+            // console.log("아웃사이드")
+            // e.stopPropagation();
             const el = cropAreaRef.current?.resizableElement.current;
             if (el && !el.contains(e.target as Node)) {
                 // quizDetailRef 외부를 클릭했을 때
@@ -97,6 +101,7 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
                 setIsFocused(true);
             }
         };
+
 
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
@@ -171,6 +176,7 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
 
 
     const handleOnResizeStop: RndResizeCallback = useCallback((e, direction, ref, delta, position) => {
+        console.log("리사이즈스톱")
         const left = containerRef.current ? (position.x * 100 / containerRef.current.offsetWidth) : 0;
         const top = containerRef.current ? (position.y * 100 / containerRef.current.offsetHeight) : 0;
         setCropRenderSize({
@@ -236,7 +242,7 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
             ref={cropAreaRef}
             style={{
                 background: backgroundColor, // 기본값 설정,
-                zIndex: `${isFocused ? 11 : 0}`
+                zIndex: `${isFocused ? 1 : 0}`
             }}
             size={{ width: cropRenderSize.width, height: cropRenderSize.height }}
             bounds={containerRef.current || undefined}
@@ -261,7 +267,14 @@ const CropArea2 = forwardRef<CropAreaInstance, CropAreaProps>((props, ref) => {
             //     // e.preventDefault();
             //     // e.stopPropagation();
             // }}
+
             onDragStop={handleOnDragStop}
+            onResizeStart={()=>{
+                console.log("리사이즈")
+            }}
+            onResize={()=>{
+                console.log("리사이즈중")
+            }}
             onResizeStop={handleOnResizeStop}
         >
             <div className={`CropAreaWrapper ${isFocused ? 'active-animatioon' : ''}`}>

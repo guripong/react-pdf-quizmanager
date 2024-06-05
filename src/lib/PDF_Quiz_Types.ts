@@ -37,7 +37,7 @@ interface PDFEnrollQuizProps {
     };
 
     PDFDocumentOnLoadCallback?: (pages: number) => void;
-    
+
     onCloseCallback?: ()=>void;
     onSaveCallback?: (newAOI:Coordinate[][],newFileName:string)=>void;
     //onCloseCallback
@@ -115,7 +115,7 @@ interface PDFPreviewProps {
 interface PDFTopBarProps {
     handleOnSave?: ()=>void;
     onCloseCallback?:()=>void;
-
+    handleOpenPreview: ()=>void;
     dynamicAllPageRef: RefObject<any>;
     set_leftPreviewShow: React.Dispatch<React.SetStateAction<boolean>>;
     handleChangeNowPage: (page: number) => void;

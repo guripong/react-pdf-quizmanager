@@ -1,6 +1,6 @@
 
-import type { Coordinate, floatingProps } from "lib/PDF_Quiz_Types";
-import { useModal } from "lib/hooks/useModal";
+import type { Coordinate } from "lib/PDF_Quiz_Types";
+
 import React, { RefObject, useEffect, useState } from "react";
 // import { Rnd } from "react-rnd";
 
@@ -66,8 +66,8 @@ const OneQuiz: React.FC<OnequizProps> = (props) => {
     
     // console.log("cropRenderSize", cropRenderSize)
     return (<div className="OneQuiz" 
-        onClick={(e)=>{
-            e.stopPropagation();
+        onClick={()=>{
+            // e.stopPropagation();
             handleSolveQuiz(oneAOI,pageIndex,aoiIndex)
         }}
 
@@ -78,7 +78,7 @@ const OneQuiz: React.FC<OnequizProps> = (props) => {
             top: cropRenderSize.y + "px",
             position: "absolute",
             background: cropRenderSize.isAnswered?"":"",
-            border:cropRenderSize.isAnswered?"2px dashed rgb(101, 199, 101)":"1px solid red"
+            border:cropRenderSize.isAnswered?"2px dashed rgb(101, 199, 101)":""
         }}
 
     >

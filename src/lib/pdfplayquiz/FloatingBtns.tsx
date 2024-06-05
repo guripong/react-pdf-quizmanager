@@ -1,5 +1,6 @@
+import React from 'react';
 import { useModal } from 'lib/hooks/useModal';
-import React, { useState } from 'react';
+import { useControls } from "react-zoom-pan-pinch";
 
 interface FlotingBtnsProps {
     nowPage?: number;
@@ -13,7 +14,7 @@ interface FlotingBtnsProps {
 
 const FloatingBtns: React.FC<FlotingBtnsProps> = ({ nowPage, maxPageNumber, handleChangePage, onCloseCallback, showFloating }) => {
     const { showModal } = useModal();
-
+    const { /*zoomIn, zoomOut,*/ resetTransform } = useControls();
 
 
     return (<>
@@ -23,17 +24,22 @@ const FloatingBtns: React.FC<FlotingBtnsProps> = ({ nowPage, maxPageNumber, hand
                 transition: "100ms"
 
             }}
-        >{`${nowPage} / ${maxPageNumber}`}</div>
+            onMouseDown={()=>{
+                resetTransform();
+            }}
+        >{`${nowPage} / ${maxPageNumber}`}
+    
+        </div>
         <button className="floating floating_left"
             style={{
                 opacity: showFloating ? 1 : 0,
                 transition: "100ms",
                 display:`${nowPage&&nowPage <= 1?"none":""}`
             }}
-            onClick={(e) => {
+            onMouseDown={(e) => {
  
                 e.stopPropagation();
-                console.log("왼")
+                // console.log("왼")
                 if(handleChangePage){
                     handleChangePage("left");
                     console.log("왼쪽")
@@ -48,15 +54,18 @@ const FloatingBtns: React.FC<FlotingBtnsProps> = ({ nowPage, maxPageNumber, hand
                 transition: "100ms",
                 display:`${maxPageNumber&&nowPage&&maxPageNumber > nowPage?"":"none"}`
             }}
-
-            onClick={(e) => {
+            onMouseDown={(e)=>{
+ 
+            
                 e.stopPropagation();
+                // console.log("오른")
                 if(handleChangePage){
                     handleChangePage("right")
                 }
 
 
-                }}>
+             }}
+                >
             {'>'}
         </button>
 
@@ -66,8 +75,11 @@ const FloatingBtns: React.FC<FlotingBtnsProps> = ({ nowPage, maxPageNumber, hand
                 transition: "100ms"
 
             }}
-            className="floating floating_down" onClick={(e) => {
+            className="floating floating_down" onMouseDown={(e) => {
                 e.stopPropagation();
+
+                //아직안푼게 남았는데 종효할래?
+                
                 showModal(
                     <div>
                         <h2>측정중단</h2>
@@ -79,7 +91,7 @@ const FloatingBtns: React.FC<FlotingBtnsProps> = ({ nowPage, maxPageNumber, hand
                         }
                     },
                     () => {
-                        console.log("중단취소")
+                        // console.log("중단취소")
                     }
                 );
             }}>

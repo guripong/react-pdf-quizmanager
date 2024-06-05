@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import "./Modal.scss";
-import FloatingBtns from 'lib/pdfplayquiz/FloatingBtns';
 import { floatingProps } from 'lib/PDF_Quiz_Types';
 interface ModalContextType {
   showModal: (content: ReactNode, 
@@ -11,8 +10,7 @@ interface ModalContextType {
   
 
   hideModal: () => void;
-  showDefaultModal: (obj: floatingProps) => void;
-
+ 
 }
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
@@ -35,12 +33,7 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [btnNameArr,set_btnNameArr] = useState<string[] | null>(null);
 
 
-  const showDefaultModal = (obj: floatingProps) => {
 
-    setOnConfirm(() => onConfirm || null);
-    setOnCancel(() => onCancel || null);
-    setIsVisible(true);
-  }
 
   const showModal = (content: ReactNode,
     confirmAction?: () => void,
@@ -74,7 +67,7 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // console.log("showDefault", showDefault)
   const contextValue: ModalContextType = {
     // 다른 함수들...
-    showModal, hideModal, showDefaultModal 
+    showModal, hideModal
 
   };
 
