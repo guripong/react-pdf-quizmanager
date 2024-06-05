@@ -6,7 +6,7 @@ import { arraysAreEqual, findMaxIndex } from "./util/util";
 // import VirtualScroll from "./components/VirtualScroll";
 import MultipleCropDiv2 from "./components/MutlipleCropDiv2";
 import { produce } from 'immer';
-import { Scrollbars } from 'react-custom-scrollbars-2';
+// import { Scrollbars } from 'react-custom-scrollbars-2';
 
 
 interface ShouldRenderPageInform {
@@ -53,17 +53,11 @@ interface VisibleInformation {
 const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPageProps>((props, ref) => {
     const { previewOption, set_selAOI, set_tempAOI, tempAOI, AOI_mode, set_nowPage, preparePage, pages, percentPagesData, leftPreviewShow } = props;
 
-    // const scrollDivRef = useRef<HTMLDivElement>(null);
-    const scrollDivRef = useRef<Scrollbars>(null);
+    const scrollDivRef = useRef<HTMLDivElement>(null);
+    // const scrollDivRef = useRef<Scrollbars>(null);
 
 
-    // const pagesArrRef = useRef<Array<React.RefObject<HTMLDivElement>>>([]);
 
-    // if (pagesArrRef.current.length !== percentPagesData.length) {
-    //     pagesArrRef.current = Array(percentPagesData.length)
-    //         .fill(null)
-    //         .map((_, i) => pagesArrRef.current[i] || createRef());
-    // }
 
 
     // const pageMultileCropDivRef = useRef(Array.from({ length: percentPagesData.length }, () => createRef()));
@@ -139,7 +133,7 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
         // console.log("@@@@@@@@@@@@@@@changePercentPagesData@@@@@@@@@@@");
         const beforehouldRenderHighQualityPageArray = beforeHighqualityRef.current;
 
-        const { scrollTop, clientHeight, scrollHeight } = scrollDivRef.current.getValues() || {
+        const { scrollTop, clientHeight, scrollHeight } = scrollDivRef.current|| {
             scrollTop: 0,
             clientHeight: 0,
             scrollHeight: 0,
@@ -231,8 +225,8 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
                             // shouldmove;
                             //
                             //강제 이동시킴.. percent가 바뀌어도.. 지금 보고있는 PDF위치로                            
-                            scrollDivRef.current.scrollTop(shouldmove);
-                            // scrollDivRef.current.container!.scrollTop = shouldmove;
+                            // scrollDivRef.current.scrollTop(shouldmove);
+                            scrollDivRef.current.scrollTop = shouldmove;
 
                             prevFirstPartVisibleInformRef.current = firstPartVisibleInformRef.current;
                             firstPartVisibleInformRef.current = firstPartVisibleInformation;
@@ -387,10 +381,10 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
             }
 
         }
-        if (sctop !== null && scrollDivRef.current.container) {
-            // scrollDivRef.current.container.scrollTop = sctop;
+        if (sctop !== null && scrollDivRef.current) {
+            scrollDivRef.current.scrollTop = sctop;
             //해당 page의 Top scroll위치로 이동합니다;
-            scrollDivRef.current.scrollTop(sctop);
+            // scrollDivRef.current.scrollTop(sctop);
 
         }
     }, [percentPagesData])
@@ -457,7 +451,7 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
     return (
 
         <div className="PDFdynamicAllPage" style={PDFdynamicAllPageStyle}>
-            <Scrollbars className="scrollDiv" ref={scrollDivRef}
+            <div className="scrollDiv" ref={scrollDivRef}
             onScroll={handleOnScroll} style={{width:"100%",height:"100%"}} >
                 {/* <div onScroll={handleOnScroll} ref={scrollDivRef} className="scrollDiv"> */}
 
@@ -536,7 +530,7 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
 
 
                 {/* </div> */}
-            </Scrollbars>
+            </div>
         </div>
 
 
