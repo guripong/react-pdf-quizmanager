@@ -3,24 +3,10 @@ import React, { useMemo, useRef, useState } from 'react';
 import { useCallback } from 'react';
 
 import "./App.scss"
-// import type { Coordinate, PDFPlayQuizProps } from './lib/PDF_Quiz_Types';
-// import { PDFEnrollQuiz, PDFPlayQuiz } from './lib';
-import { PDFEnrollQuiz, PDFPlayQuiz } from 'react-pdf-quizmanager';
-import type { Coordinate, PDFPlayQuizProps } from 'react-pdf-quizmanager';
-import "react-pdf-quizmanager/dist/style.css";
-
-// import { GPtable } from 'react-gptable';
-// import type { GPColumn, GPTableInstance } from 'react-gptable';
-// import "react-gptable/dist/style.css";
-
-
-
-// import { GPtable } from "./dist/index.es.js"; // 빌드된 파일의 경로로 변경해야 합니다.
-// import type { GPprops } from "./dist";
-
-
-//  import  { GPTableInstance, GPtable,IndeterminateCheckbox,
-//   GPColumn}  from 'react-gptable'
+import type { Coordinate, PDFPlayQuizProps } from './lib/PDF_Quiz_Types';
+import { PDFEnrollQuiz, PDFPlayQuiz } from './lib';
+// import { PDFEnrollQuiz, PDFPlayQuiz } from 'react-pdf-quizmanager';
+// import type { Coordinate, PDFPlayQuizProps } from 'react-pdf-quizmanager';
 
 
 
