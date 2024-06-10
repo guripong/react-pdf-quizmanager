@@ -180,6 +180,7 @@ type preparePage = (page: PDFPageProxy,
     => Promise<PreRenderedPDFPage>;
 
 interface PDFdynamicAllPageProps {
+    set_viewPercent:React.Dispatch<React.SetStateAction<string>>;
     set_selAOI: React.Dispatch<React.SetStateAction<AOIProps|null>>;
     set_tempAOI: React.Dispatch<React.SetStateAction<Coordinate[][]>>;
     tempAOI: Coordinate[][];

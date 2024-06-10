@@ -75,7 +75,7 @@ const PDFEnrollQuiz: React.FC<PDFEnrollQuizProps> = (props) => {
 
 
     const [leftPreviewShow, set_leftPreviewShow] = useState(previewOption.initLeftPreviewshow ?? false);
-    const [viewPercent, set_viewPercent] = useState(option?.pageViewOption?.initViewPercent ?? '100%');
+    const [viewPercent, set_viewPercent] = useState<string>(option?.pageViewOption?.initViewPercent ?? '100%');
     const [nowPage, set_nowPage] = useState<number>(1);
     const [fileName, set_fileName] = useState(initFileName);
 
@@ -161,11 +161,12 @@ const PDFEnrollQuiz: React.FC<PDFEnrollQuizProps> = (props) => {
     //레프트바의 preview에 대한..설정인데
     //1.preparedPreviewPages   미리보기 페이지기 완성된 후에 
     //2.고해상도 page를 준비하기 위한 객체 생성
+   
     useEffect(() => {
         if (!preparedPreviewPages) return;
         const wrapEl: HTMLElement | null = documentRef.current;
-        let resizing = false; // Flag to track whether resizing is in progress
-
+        // let resizing = false; // Flag to track whether resizing is in progress
+ 
         const resizeObserver = new ResizeObserver(entries => {
             // 크기 변경시 실행할 작업을 여기에 작성합니다.
             entries.forEach(() => {
@@ -186,15 +187,19 @@ const PDFEnrollQuiz: React.FC<PDFEnrollQuizProps> = (props) => {
                 // console.log("PDF 크기",renderWidth)
                 // console.log('PDF 껍데기의 크기가 변경되었습니다!', contentWidth, contentHeight);
                 //   const renderWidth = contentWidth * parseInt(viewPercent) / 100;
+                // console.log("debouncedGeneratePercentPagesData 호출");
+
                 debouncedGeneratePercentPagesData(renderWidth);
             });
         });
 
         function generatePercentPagesData(renderWidth: number) {
-            if (resizing) {
-                return; // If resizing is already in progress, return early
-            }
-            resizing = true; // Set the resizing flag to true
+            // if (resizing) {
+            //     console.log("이미 리사이징중")
+            //     return; // If resizing is already in progress, return early
+            // }
+            // resizing = true; // Set the resizing flag to true
+            // console.log("resizing",resizing)
             // console.log("generatePercentPagesData 호출")
 
             //하이랜더 안한 데이터들임
@@ -226,12 +231,16 @@ const PDFEnrollQuiz: React.FC<PDFEnrollQuizProps> = (props) => {
                     hs = hs + onePageHeight + onePageMarginTop;
                 }
             }
-
+            // console.log("할당percentPageData");
             set_percentPagesData(viewPercentPagesData);
-            resizing = false;
+            // resizing = false;
         }
+
+
         const debouncedGeneratePercentPagesData = _.debounce((arg) => {
+ 
             generatePercentPagesData(arg)
+
         }, 100);
 
         if (wrapEl) {
@@ -240,6 +249,7 @@ const PDFEnrollQuiz: React.FC<PDFEnrollQuizProps> = (props) => {
 
         return () => {
             resizeObserver.disconnect();
+            debouncedGeneratePercentPagesData.cancel(); // Clean up the debounce on unmount
         }
     }, [preparedPreviewPages, viewPercent, leftPreviewShow, previewOption])
 
@@ -270,7 +280,7 @@ const PDFEnrollQuiz: React.FC<PDFEnrollQuizProps> = (props) => {
     
 
 
-    return (<><div className={`PDFEnrollQuiz ${className}`} ref={documentRef}>
+    return (<><div className={`PDFEnrollQuiz${className?` ${className}`:""}`} ref={documentRef}>
         <ModalProvider>
             {previewOption && preparedPreviewPages && percentPagesData ?
                 <>
@@ -325,7 +335,7 @@ const PDFEnrollQuiz: React.FC<PDFEnrollQuizProps> = (props) => {
                         AOI_mode={AOI_mode}
                         pages={pages}
                         preparePage={preparePage}
-
+                        set_viewPercent={set_viewPercent}
                         set_selAOI={set_selAOI}
                     />
 

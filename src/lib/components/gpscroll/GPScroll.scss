@@ -1,0 +1,40 @@
+/* src/components/GPScroll.css */
+.gp-scroll-wrapper {
+    position: relative;
+    overflow: auto;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding-bottom: 30px;
+    &::-webkit-scrollbar {
+        width: 0px; /* 스크롤바 너비 지정 */
+        height:0px;
+    }
+
+
+  }
+  
+
+  .gp-scroll-content {
+    position: relative;
+  }
+  
+  .gp-scroll-thumb {
+    position: absolute;
+    right: 0;
+    width: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .gp-scroll-thumb-all{
+    position: absolute;
+    right: 0;
+    width: 10px;
+    height:100%;
+    top:0;
+    background: gray;
+    border-radius: 5px;
+    cursor: pointer;
+  }
