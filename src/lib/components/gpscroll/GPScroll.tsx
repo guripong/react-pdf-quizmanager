@@ -7,6 +7,7 @@ interface GPScrollProps {
     style?: React.CSSProperties;
     className?: string;
 }
+//https://codesandbox.io/p/sandbox/react-custom-scrollbar-demo-1-obn9b?file=%2Fsrc%2FuseCustomScrollBar.tsx%3A88%2C6-90%2C30
 
 const GPScroll = forwardRef<HTMLDivElement, GPScrollProps>(({ children, onScroll, style, className }, ref) => {
     const wrapperRef = useRef<HTMLDivElement>(null);
@@ -21,23 +22,28 @@ const GPScroll = forwardRef<HTMLDivElement, GPScrollProps>(({ children, onScroll
 
     
     useEffect(() => {
+        const content = contentRef.current;
         const wrapper = wrapperRef.current;
         const thumb = thumbRef.current;
-        if (!wrapper || !thumb) return;
-
+        if (!wrapper || !thumb || !content) return;
+        // console.log("등록했ㅎ나")
         const updateThumPositionAndSize = () => {
             const { scrollHeight, clientHeight, scrollTop } = wrapper;
             const thumbHeight = Math.max((clientHeight* clientHeight / scrollHeight), 20);
             const viewport = scrollHeight - clientHeight;
             const scrollRatio = scrollTop / viewport;
-
+            // const scrollYFactor = (innerH - thumbHeight) / (innerH - outerH);
+            // const maxThumbScrollY = innerH - thumbHeight;
+            // const thumbScrollY = innerContainerY * scrollYFactor;
             const thumbTop = scrollRatio * (scrollHeight - thumbHeight);
             // beforeThumbTopRatio.current= thumbTop/(scrollHeight-thumbHeight);
 
             thumb.style.height = thumbHeight + 'px';
-            thumb.style.top = thumbTop + 'px';
+            // thumb.style.top = thumbTop + 'px';
+            thumb.style.transform = `translateY(${thumbTop}px)`;
 
-        };
+        };     
+       
 
         wrapper.addEventListener('scroll', updateThumPositionAndSize);
         return () => {
@@ -88,13 +94,14 @@ const GPScroll = forwardRef<HTMLDivElement, GPScrollProps>(({ children, onScroll
         };
     }, [])
 
+
     useEffect(() => {
         const content = contentRef.current;
         if (!content) return;
-        console.log("children 변경")
+ 
         const resizeObserver = new ResizeObserver(() => {
             // Resize 이벤트 시 스크롤 위치 재조정
-
+            console.log("resizeobserver 변경")
             const wrapper = wrapperRef.current;
             const thumb = thumbRef.current;
            
@@ -114,20 +121,22 @@ const GPScroll = forwardRef<HTMLDivElement, GPScrollProps>(({ children, onScroll
             // 이 부분을 변경하여 두 가지 방법을 모두 시도해 봅니다.
 
             const beforeThumTop = scrollRatio * (scrollHeight - thumbHeight);
-            if(beforeThumTop>(content.clientHeight-thumbHeight)){
+            if(beforeThumTop>(viewport2)){
                 // content.clientHeight
                 // console.log("강제조정 1111")
                 if(content.clientHeight<clientHeight){
                     // console.log("너무작은경우컨텐츠가 스크롤바가 없어야함")
                     wrapper.scrollTop=0;
                     thumb.style.height = clientHeight + 'px';
-                    thumb.style.top = 0 + 'px';
+                    // thumb.style.top = 0 + 'px';
+                    thumb.style.transform = `translateY(${0}px)`;
                     thumb.style.display="none";
                 }
                 else{
                     const thumbTop = content.clientHeight-thumbHeight;
                     thumb.style.height = thumbHeight + 'px';
-                    thumb.style.top = thumbTop + 'px';
+                    // thumb.style.top = thumbTop + 'px';
+                    thumb.style.transform = `translateY(${thumbTop}px)`;
                     wrapper.scrollTop = thumbTop;
                     thumb.style.display="";
                 }
@@ -137,7 +146,8 @@ const GPScroll = forwardRef<HTMLDivElement, GPScrollProps>(({ children, onScroll
                 // console.log("222222222")
                 const thumbTop = scrollRatio * (scrollHeight - thumbHeight);
                 thumb.style.height = thumbHeight + 'px';
-                thumb.style.top = thumbTop + 'px';
+                // thumb.style.top = thumbTop + 'px';
+                thumb.style.transform = `translateY(${thumbTop}px)`;
                 thumb.style.display="";
                 // wrapper.scrollTop = scrollTop;
             }
