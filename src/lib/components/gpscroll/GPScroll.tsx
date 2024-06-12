@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useRef, useEffect, useState, forwardRef, useImperativeHandle, useCallback } from 'react';
 import './GPScroll.scss';
 
 interface GPScrollProps {
@@ -13,43 +13,43 @@ const GPScroll = forwardRef<HTMLDivElement, GPScrollProps>(({ children, onScroll
     const wrapperRef = useRef<HTMLDivElement>(null);
     const thumbRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
- 
+
     // const beforeThumbTopRatio = useRef<number>(0);
 
     useImperativeHandle(ref, () => wrapperRef.current!);
 
 
 
-    
-    useEffect(() => {
+    const updateThumPositionAndSize = useCallback(() => {
         const content = contentRef.current;
         const wrapper = wrapperRef.current;
         const thumb = thumbRef.current;
         if (!wrapper || !thumb || !content) return;
-        // console.log("등록했ㅎ나")
-        const updateThumPositionAndSize = () => {
-            const { scrollHeight, clientHeight, scrollTop } = wrapper;
-            const thumbHeight = Math.max((clientHeight* clientHeight / scrollHeight), 20);
-            const viewport = scrollHeight - clientHeight;
-            const scrollRatio = scrollTop / viewport;
-            // const scrollYFactor = (innerH - thumbHeight) / (innerH - outerH);
-            // const maxThumbScrollY = innerH - thumbHeight;
-            // const thumbScrollY = innerContainerY * scrollYFactor;
-            const thumbTop = scrollRatio * (scrollHeight - thumbHeight);
-            // beforeThumbTopRatio.current= thumbTop/(scrollHeight-thumbHeight);
+        const { scrollHeight, clientHeight, scrollTop } = wrapper;
+        const thumbHeight = Math.max((clientHeight * clientHeight / scrollHeight), 20);
+        const viewport = scrollHeight - clientHeight;
+        const scrollRatio = scrollTop / viewport;
+        const thumbTop = scrollRatio * (clientHeight - thumbHeight);
 
-            thumb.style.height = thumbHeight + 'px';
-            // thumb.style.top = thumbTop + 'px';
-            thumb.style.transform = `translateY(${thumbTop}px)`;
+        thumb.style.height = thumbHeight + 'px';
+        thumb.style.transform = `translateY(${thumbTop}px)`;
 
-        };     
-       
-
-        wrapper.addEventListener('scroll', updateThumPositionAndSize);
-        return () => {
-            wrapper.removeEventListener('scroll', updateThumPositionAndSize);
-        }
     }, []);
+
+    useEffect(() => {
+        const wrapper = wrapperRef.current;
+        if (!wrapper) return;
+        // console.log("등록했ㅎ나")
+
+
+        const handleScroll = () => {
+            requestAnimationFrame(updateThumPositionAndSize);
+        };
+        wrapper.addEventListener('scroll', handleScroll);
+        return () => {
+            wrapper.removeEventListener('scroll', handleScroll);
+        }
+    }, [updateThumPositionAndSize]);
 
 
     ///이상없음
@@ -95,6 +95,7 @@ const GPScroll = forwardRef<HTMLDivElement, GPScrollProps>(({ children, onScroll
     }, [])
 
 
+    
     useEffect(() => {
         const content = contentRef.current;
         if (!content) return;
@@ -112,7 +113,7 @@ const GPScroll = forwardRef<HTMLDivElement, GPScrollProps>(({ children, onScroll
             // console.log("scrollHeight",scrollHeight)
             const viewport2 = content.clientHeight - clientHeight;
 
-            const thumbHeight =clientHeight * clientHeight / content.clientHeight;
+            const thumbHeight =clientHeight * clientHeight / scrollHeight;
             // console.log("thumbHeight",thumbHeight)
             const adjustedScrollTop = Math.min(scrollTop, viewport2);
             const scrollRatio = adjustedScrollTop / viewport2;
@@ -133,7 +134,7 @@ const GPScroll = forwardRef<HTMLDivElement, GPScrollProps>(({ children, onScroll
                     thumb.style.display="none";
                 }
                 else{
-                    const thumbTop = content.clientHeight-thumbHeight;
+                    const thumbTop = clientHeight-thumbHeight;
                     thumb.style.height = thumbHeight + 'px';
                     // thumb.style.top = thumbTop + 'px';
                     thumb.style.transform = `translateY(${thumbTop}px)`;
@@ -144,7 +145,7 @@ const GPScroll = forwardRef<HTMLDivElement, GPScrollProps>(({ children, onScroll
             }
             else{
                 // console.log("222222222")
-                const thumbTop = scrollRatio * (scrollHeight - thumbHeight);
+                const thumbTop = scrollRatio * (clientHeight - thumbHeight);
                 thumb.style.height = thumbHeight + 'px';
                 // thumb.style.top = thumbTop + 'px';
                 thumb.style.transform = `translateY(${thumbTop}px)`;
@@ -160,27 +161,31 @@ const GPScroll = forwardRef<HTMLDivElement, GPScrollProps>(({ children, onScroll
             resizeObserver.disconnect();
         };
     }, []);
-
+    
 
 
 
     return (
-        <div
-            className={`gp-scroll-wrapper${className?` ${className}`:""}`}
-            ref={wrapperRef}
-            onScroll={onScroll}
-            style={style}
-        >
-            <div className="gp-scroll-content" ref={contentRef}>
-                {children}
-   
+        <div style={{position:"relative",width:"100%",height:"100%"}}>
+            <div
+                className={`gp-scroll-wrapper${className ? ` ${className}` : ""}`}
+                ref={wrapperRef}
+                onScroll={onScroll}
+                style={style}
+            >
+                <div className="gp-scroll-content" ref={contentRef}>
+                    {children}
+
+                </div>
+
+
             </div>
-      
             <div
                 className="gp-scroll-thumb"
                 ref={thumbRef}
             />
         </div>
+
     );
 });
 

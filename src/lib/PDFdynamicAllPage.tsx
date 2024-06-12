@@ -227,6 +227,7 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
                             //
                             //강제 이동시킴.. percent가 바뀌어도.. 지금 보고있는 PDF위치로                            
                             // scrollDivRef.current.scrollTop(shouldmove);
+                            
                             scrollDivRef.current.scrollTop = shouldmove;
 
                             prevFirstPartVisibleInformRef.current = firstPartVisibleInformRef.current;
