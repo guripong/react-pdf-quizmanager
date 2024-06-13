@@ -11,7 +11,41 @@ import FloatingBtns from './FloatingBtns';
 import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef, ReactZoomPanPinchContentRef } from "react-zoom-pan-pinch";
 import Loading from 'lib/components/loading/Loading';
 
+const cropCanvasToSrc2 = (
+    canvas: HTMLCanvasElement,
+    left: number,
+    top: number,
+    width: number,
+    height: number,
+    padding: number,
+    lrcut: number
+  ):string|null=> {
 
+    const tt = document.createElement('canvas');
+    tt.width = width + padding * 2 - lrcut * 2;
+    tt.height = height + padding * 2;
+  
+    const context = tt.getContext('2d');
+    if(!context){
+        return null;
+    }
+    context.drawImage(
+      canvas,
+      left - padding + lrcut,
+      top - padding,
+      width + padding * 2 - lrcut * 2,
+      height + padding * 2,
+      0,
+      0,
+      width + 2 * padding - lrcut * 2,
+      height + 2 * padding
+    );
+    const src = tt.toDataURL();
+    tt.remove(); // 가짜 캔버스 삭제함
+    return src;
+  };
+
+  
 const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
     const { AOI, path, PDFDocumentOnLoadCallback,
         onCloseCallback
@@ -246,13 +280,25 @@ const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
     const [showPagination, set_showPagination] = useState(false);
     const handleSolveQuiz = (oneAOI: Coordinate, pageIndex: number, aoiIndex: number) => {
         console.log("handleSolveQuiz")
-
+        const canvas = preparedNowPage?.canvas;
+        if(!canvas) return;
         if (isDragging) {
             setIsDragging(false);
             return;
 
         }
         // set_showPagination(true);
+        console.log("preparedNowPage",preparedNowPage)
+
+        const canvasSize =preparedNowPage.canvasSize;
+        const {width,height} = canvasSize;
+        // cropCanvasToSrc2(canvas,)
+        console.log("oneAOI",oneAOI);
+        const ctx = canvas.getContext("2d");
+        const {x:xp,y:yp,width:wp,height:hp} = oneAOI;
+        const base64=cropCanvasToSrc2(canvas, width*xp/100, height*yp/100, 
+            width*wp/100, height*hp/100, 0, 0);
+        // console.log("base64",base64);
 
         const btnNameArr: string[] = ["확인", "취소"];
         // handleChangeOneAOI
@@ -261,23 +307,32 @@ const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
 
             let selectedAnswer = oneAOI.answer || "1";
             showModal(
-                <div>
-                    <h2>{oneAOI.name}</h2>
-                    <p>객관식 답을 골라주세요</p>
-                    <select className="normalSelect"
-                        defaultValue={selectedAnswer}
-                        onChange={(e) => {
-                            selectedAnswer = e.target.value;
-                        }}
-                    >
-                        {/* <option value="0">정답없음</option> */}
-                        {[...Array(oneAOI.quizOptionCount).keys()].map((value) => (
-                            <option key={value + 1} value={value + 1}>
-                                {value + 1}
-                            </option>
-                        ))}
-                    </select>
-                </div>,
+                <>
+           
+                        <img className="cropImg"src={base64??""} alt="" />
+                
+               
+                        <h2>{oneAOI.name}</h2>
+                        <div>
+
+                        </div>
+                        <p>대답을 선택하고 확인을 누르세요</p>
+                        <select className="normalSelect"
+                            defaultValue={selectedAnswer}
+                            onChange={(e) => {
+                                selectedAnswer = e.target.value;
+                            }}
+                        >
+                            {/* <option value="0">정답없음</option> */}
+                            {[...Array(oneAOI.quizOptionCount).keys()].map((value) => (
+                                <option key={value + 1} value={value + 1}>
+                                    {value + 1}
+                                </option>
+                            ))}
+                        </select>
+               
+                  
+                </>,
                 (() => {
                     const newAOI: Coordinate = {
                         ...oneAOI,
@@ -298,19 +353,21 @@ const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
 
             //주관식
             showModal(
-                <div>
-                    <h2>{oneAOI.name}</h2>
-                    <p>주관식답을 기입해 주세요.</p>
-
+                <>
+                    <img className="cropImg" src={base64??""} alt="" />
+                    <h2>{oneAOI.name}<span></span></h2>
+        
+            
                     <input
-                        className="normalSelect"
-                        style={{ width: 130 }}
+                        className="normalInput"
+                        style={{width:200}}
+                        placeholder='대답을 입력하고 확인을 누르세요'
                         defaultValue={oneAOI.answer}
                         onChange={(e) => {
                             selectedAnswer = e.target.value;
                         }}
                     />
-                </div>,
+                </>,
                 (() => {
                     const newAOI: Coordinate = {
                         ...oneAOI,

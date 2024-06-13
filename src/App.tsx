@@ -14,28 +14,40 @@ function App() {
 
 
   const [tempAOI, setTempAOI] = useState<Coordinate[][]>([
-    [{
-      x: 6,
-      y: 32,
-      width: 33,
-      height: 10,
-      id: '1234',
-      type: "MC", // 객관식 Multiple Choice
-      name: "객관식(1-1)",
-      quizOptionCount: 3, //(1~10 선택가능)
-      correctAnswer: 1, //1번이 정답    0번은 정답없음
-
-    }, {
-      x: 6,
-      y: 43,
-      width: 42,
-      height: 14,
-      id: '5678',
-      type: "SJ", //주관식 Subject
-      name: "주관식(1-2)",
-      correctAnswer: "",
-    }], //1번페이지  없는페이지는 자동생성
-  ])
+    [
+      {
+        x: 6,
+        y: 32,
+        width: 33,
+        height: 10,
+        id: '1234',
+        type: "MC", // 객관식 Multiple Choice
+        name: "객관식(1-1)",
+        quizOptionCount: 3, // (1~10 선택가능)
+        correctAnswer: 1, // 1번이 정답, 0번은 정답없음
+      },
+      {
+        x: 6,
+        y: 43,
+        width: 42,
+        height: 14,
+        id: '5678',
+        type: "SJ", // 주관식 Subject
+        name: "주관식(1-2)",
+        correctAnswer: "",
+      },
+      {
+        x: 48.82198952879581,
+        y: 26.38888888888889,
+        width: 41.4921,
+        height: 51.2037,
+        id: 'Gw7Pc_k3D',
+        type: "SJ", // 주관식 Subject
+        name: "주관식(1-3)",
+        correctAnswer: "",
+      },
+    ],
+  ]);
 
 
 
@@ -173,6 +185,7 @@ function App() {
           }}
 
           onSaveCallback={(newAOI: Coordinate[][], newFileName: string) => {
+            console.log("newAOI",newAOI)
             setTempAOI(newAOI);
             set_pdfName(newFileName);
           }}
