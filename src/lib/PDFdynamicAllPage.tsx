@@ -221,7 +221,7 @@ const PDFdynamicAllPage = forwardRef<PDFdynamicAllPageInstance, PDFdynamicAllPag
                         // console.log("지금보이는 스크롤정보",firstPartVisibleInformation);
                         if (prev) {
                             const prevRatio = prev.visibleMin / prev.scrollHeight;
-
+                            console.log("이동이 과연",prevRatio)
                             const shouldmove = now.scrollHeight * prevRatio;
                             // shouldmove;
                             //
