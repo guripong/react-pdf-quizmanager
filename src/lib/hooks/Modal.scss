@@ -50,13 +50,17 @@ $button-border-radius: 5px;
   .modal-actions {
     display: flex;
     justify-content: center;
-    justify-content: center;
+    justify-content: space-around;
+    // gap:10px;
     gap:10px;
     .modal-button {
-      width:40%;
+      min-width:40%;
+
+      width:auto;
+      white-space: nowrap;
       font-size:1.3rem;
       padding: $button-padding;
-      margin-left: 10px;
+      // margin-left: 10px;
       border: none;
       border-radius: $button-border-radius;
       cursor: pointer;

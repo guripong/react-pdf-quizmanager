@@ -81,7 +81,7 @@ const FloatingBtns: React.FC<FlotingBtnsProps> = ({ nowPage, maxPageNumber, hand
                 //아직안푼게 남았는데 종효할래?
                 
                 showModal(
-                    <div>
+                    <div style={{minWidth:"200px"}}>
                         <h2>측정중단</h2>
                         <p>중단하시겠습니까?</p>
                     </div>,
