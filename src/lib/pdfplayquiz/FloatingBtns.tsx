@@ -42,7 +42,7 @@ const FloatingBtns: React.FC<FlotingBtnsProps> = ({ nowPage, maxPageNumber, hand
                 // console.log("왼")
                 if(handleChangePage){
                     handleChangePage("left");
-                    console.log("왼쪽")
+                    // console.log("왼쪽")
                 }
 
                 }}>

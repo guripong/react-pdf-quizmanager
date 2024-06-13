@@ -27,20 +27,21 @@ const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
     const PDFPlayQuizRef = useRef<HTMLDivElement>(null);
     const AOIWrapperRef = useRef<HTMLDivElement>(null);
 
-    const isPreparingPages = useRef<boolean>(false);
+
 
     useEffect(() => {
         if (!pages) return;
         if (!PDFPlayQuizRef || !PDFPlayQuizRef.current) return;
+
         // if (preparedPage) return;
-        console.log("isPreparingPages", isPreparingPages)
+
         //전체화면이 아닐경우 기다려버려라.
-        console.log("@@@@@@@@@@@@@@@미리보기 페이지 생성 관련이슈체크");
 
         // const renderWidth=200;
 
         const wrapEl = PDFPlayQuizRef.current;
         //#@! 리사이즈시 init view 필요
+
 
         const resizeObserver = new ResizeObserver(entries => {
             // 크기 변경시 실행할 작업을 여기에 작성합니다.
@@ -53,7 +54,16 @@ const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
                 // debouncedResetContainerInform();
 
                 // console.log("여기호출?")
-                prepareAllPage(pages, wrapEl.offsetWidth);
+ 
+          
+                // wrapEl.offsetHeight
+
+                // const aimWidth =wrapEl.offsetWidth>1000? wrapEl.offsetWidth:wrapEl.offsetWidth*2;
+                const aimWidth =wrapEl.offsetWidth>1000? wrapEl.offsetWidth:1000;
+                // Math.max(wrapEl.offsetWidth,1000);
+                // const aimWidth=wrapEl.offsetWidth;
+                // console.log("캔버스에만들이미지목표사이즈aimWidth",aimWidth)
+                prepareAllPage(pages, aimWidth);
                 // handleTestLoad();
             });
         });
@@ -69,8 +79,50 @@ const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
             }
 
             Promise.all(p).then((preparedPDFPages: PreRenderedPDFPage[]) => {
-                console.log("preparedPDFPages[]:", preparedPDFPages);
+                // console.log("preparedPDFPages[]:", preparedPDFPages);
+                // console.log("preparedPDFPages",preparedPDFPages[0].canvasSize);
                 // let preparedPages=res;
+   
+                const originCanvasSize =preparedPDFPages[0].canvasSize;
+                const {width,height} = originCanvasSize;
+                const initScale=wrapEl.offsetWidth/width;
+                // console.log("initScale",initScale)
+                // const initScale = wrapEl.offsetWidth/scaleWidth;
+                // const scaleWidth = width*initScale;
+                //wraper 과 scalewidth은항상 같을꺼임.
+
+                // console.log("wrapEl.offsetWidth,scaleWidth,width",wrapEl.offsetWidth,scaleWidth,width);
+                const scaleheight = height*initScale;
+
+                // console.log("scaleWidth",scaleWidth)
+                // console.log("scaleheight",scaleheight);
+                // console.log("wrapEl.offsetWidth",wrapEl.offsetWidth)
+                // console.log("wrapEl.offsetHeight",wrapEl.offsetHeight)
+                set_initData({
+                    scale:initScale,
+                    initialPositionX:0,
+                    initialPositionY:wrapEl.offsetHeight>scaleheight?
+                    (wrapEl.offsetHeight-scaleheight)/2:0,
+                });
+
+                if(zoompanRef.current){
+                    const { state } = zoompanRef.current.instance.getContext();
+                    const { positionX, positionY } = state;
+                    // console.log("wrapEl.offsetHeight",wrapEl.offsetHeight,scaleheight)
+                    // console.log("positionY",positionY)
+                    if(wrapEl.offsetHeight>scaleheight){
+                        //크다가 줄어서 바뀐경우
+                        zoompanRef.current.setTransform(positionX, wrapEl.offsetHeight>scaleheight?(wrapEl.offsetHeight-scaleheight)/2:positionY, initScale);
+                    }
+                    else{
+                   
+                        zoompanRef.current.setTransform(positionX, 0, initScale);
+                    }
+                
+                }
+
+
+
                 set_preparedPage(preparedPDFPages);
 
             }).catch(err => {
@@ -301,13 +353,15 @@ const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
         }
     };
     const zoompanRef = useRef<ReactZoomPanPinchRef>(null);
+
+
     useEffect(()=>{
         if(!preparedNowPage ||!zoompanRef.current){
             return ;
         }
 
         const parentEl=zoompanRef.current.instance.contentComponent?.offsetParent;
-        console.log("parentEl",parentEl)
+        // console.log("parentEl",parentEl)
 
         function handleWheel(event:WheelEvent){
             if(!preparedNowPage){
@@ -333,12 +387,26 @@ const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
                 // console.log("deltaY",deltaY)
                 // 예외 처리: newY가 0 미만이면 0으로 설정
                 newY = Math.min(newY, 0);
-
+                // console.log("preparedNowPage",preparedNowPage)
+                // console.log("preparedNowPage.wrapperSize.height*scale",preparedNowPage.wrapperSize.height*scale)
+                // console.log("PDFPlayQuizRef.current.offsetHeight",PDFPlayQuizRef.current.offsetHeight)
                 // 예외 처리: 현재 scale 보다 더 크게 확대되지 않도록 제한
-                const contentHeight = (preparedNowPage.wrapperSize.height*scale-PDFPlayQuizRef.current.offsetHeight);
-                if (newY < -(contentHeight)) {
-                    newY = -(contentHeight);
+                //wrapEl.offsetHeight>scaleheight?
+                // (wrapEl.offsetHeight-scaleheight)/2:0,
+                const renderHeight =preparedNowPage.wrapperSize.height*scale;
+                if(renderHeight<PDFPlayQuizRef.current.offsetHeight){
+                    const contentHeight = -((PDFPlayQuizRef.current.offsetHeight-renderHeight)/2);
+                    if (newY < -(contentHeight)) {
+                        newY = -(contentHeight);
+                    }
                 }
+                else{
+                    const contentHeight = (renderHeight-PDFPlayQuizRef.current.offsetHeight);
+                    if (newY < -(contentHeight)) {
+                        newY = -(contentHeight);
+                    }
+                }
+
 
                 zoompanRef.current.setTransform(positionX, newY, scale);
                
@@ -350,7 +418,15 @@ const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
         return ()=>{
             parentEl?.removeEventListener("wheel",handleWheel as EventListener)
         }
-    },[preparedNowPage])
+    },[preparedNowPage]);
+
+
+    const [initData,set_initData] = useState({
+        scale:1,
+        initialPositionX:0,
+        initialPositionY:0,
+    });
+
     // console.log("zoompanRef",zoompanRef.current?.instance?.contentComponent?.offsetParent)
     return (<div className="centerView" ref={PDFPlayQuizRef}
 
@@ -365,6 +441,7 @@ const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
 
                 <TransformWrapper
                     ref={zoompanRef}
+                    initialScale={initData.scale}
                     doubleClick={{disabled:true}}
                     panning={{disabled:false}}
                     limitToBounds={true}
@@ -373,11 +450,16 @@ const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
                         sizeY: 0,
                         sizeX: 0 
                     }}
+                    maxScale={3}
+                    minScale={initData.scale}
+                    // centerOnInit
+                    initialPositionX={initData.initialPositionX}
+                    initialPositionY={initData.initialPositionY}
                     wheel={{ disabled: false ,
 
                         wheelDisabled:true
                     }} // Wheel zooming disabled
-
+                    
                     // onWheel={(zoomRef,event)=>{
                     // }}
                     // onZoom={(ref,event)=>{
