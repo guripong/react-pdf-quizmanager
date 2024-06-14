@@ -39,6 +39,66 @@ $focus-outline-color: $primary-color;
             background:rgba(0,0,0,.5); 
         }
       }
+      .floating_zoomin{
+        padding:5px;
+        box-sizing: border-box;
+        position:fixed;
+        top:40%;
+        left:calc(50% - 75px);
+        width:150px;
+        background:rgba(0,0,0,.4);
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        border:1px solid #fff;
+        border-radius: 5px;
+        font-size:1.4rem;
+        color:white;
+        cursor:pointer;
+        &:hover{
+            background:rgba(0,0,0,.5); 
+        }
+      }
+      .floating_reset{
+        padding:5px;
+        box-sizing: border-box;
+        position:fixed;
+        top:50%;
+        left:calc(50% - 75px);
+        width:150px;
+        background:rgba(0,0,0,.4);
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        border:1px solid #fff;
+        border-radius: 5px;
+        font-size:1.4rem;
+        color:white;
+        cursor:pointer;
+        &:hover{
+            background:rgba(0,0,0,.5); 
+        }
+      }
+      .floating_zoomout{
+        padding:5px;
+        box-sizing: border-box;
+        position:fixed;
+        top:60%;
+        left:calc(50% - 75px);
+        width:150px;
+        background:rgba(0,0,0,.4);
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        border:1px solid #fff;
+        border-radius: 5px;
+        font-size:1.4rem;
+        color:white;
+        cursor:pointer;
+        &:hover{
+            background:rgba(0,0,0,.5); 
+        }
+      }
       .floating_right{
         position:fixed;
         top:35%;

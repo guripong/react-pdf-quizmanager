@@ -14,7 +14,7 @@ interface FlotingBtnsProps {
 
 const FloatingBtns: React.FC<FlotingBtnsProps> = ({ nowPage, maxPageNumber, handleChangePage, onCloseCallback, showFloating }) => {
     const { showModal } = useModal();
-    const { /*zoomIn, zoomOut,*/ resetTransform } = useControls();
+    const { zoomIn, zoomOut, resetTransform } = useControls();
 
 
     return (<>
@@ -24,12 +24,52 @@ const FloatingBtns: React.FC<FlotingBtnsProps> = ({ nowPage, maxPageNumber, hand
                 transition: "100ms"
 
             }}
-            onMouseDown={()=>{
-                resetTransform();
+            onMouseDown={(e)=>{
+                
+                e.stopPropagation();
             }}
         >{`${nowPage} / ${maxPageNumber}`}
-    
         </div>
+
+        <div className="floating floating_zoomin" 
+             style={{
+                opacity: showFloating ? 1 : 0,
+                transition: "100ms"
+
+            }}
+            onMouseDown={(e)=>{
+                
+                e.stopPropagation();
+            zoomIn();
+        }}>
+            zoom+
+        </div>
+        <div className="floating floating_reset" 
+             style={{
+                opacity: showFloating ? 1 : 0,
+                transition: "100ms"
+
+            }}
+            onMouseDown={(e)=>{
+                e.stopPropagation();
+                resetTransform();
+        }}>
+            resetzoom
+        </div>
+        <div className="floating floating_zoomout" 
+             style={{
+                opacity: showFloating ? 1 : 0,
+                transition: "100ms"
+
+            }}
+            onMouseDown={(e)=>{
+                
+                e.stopPropagation();
+                zoomOut();
+        }}>
+            zoom-
+        </div>
+
         <button className="floating floating_left"
             style={{
                 opacity: showFloating ? 1 : 0,
