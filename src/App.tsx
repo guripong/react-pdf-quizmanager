@@ -206,7 +206,9 @@ function App() {
           PDFDocumentOnLoadCallback={() => {
 
           }}
-          onCloseCallback={() => {
+          onCloseCallback={(saveAOI:Coordinate[][],duration:number) => {
+            console.log("저장할newAOI", saveAOI)
+            console.log("측정시간",duration)
             set_playOption((prev: PDFPlayQuizProps | null) => {
               if (prev) {
                 console.log("메모리해제");
@@ -215,12 +217,11 @@ function App() {
               }
               return null
             });
+
+
           }}
 
-          onSaveCallback={(newAOI: Coordinate[][]) => {
-            // setTempAOI(newAOI);
-            console.log("저장할newAOI", newAOI)
-          }}
+  
 
         />
 

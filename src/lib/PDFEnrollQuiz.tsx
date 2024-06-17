@@ -357,15 +357,11 @@ const PDFEnrollQuiz: React.FC<PDFEnrollQuizProps> = (props) => {
             path={path}
             AOI={tempAOI}
   
-            onCloseCallback={() => {
+            onCloseCallback={(newAOI: Coordinate[][]) => {
                set_showPreview(false);
             }}
   
-            onSaveCallback={(newAOI: Coordinate[][]) => {
-              // setTempAOI(newAOI);
-              console.log("저장할newAOI", newAOI)
-              set_showPreview(false);
-            }}
+        
   
           />
   

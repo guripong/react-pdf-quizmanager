@@ -10,6 +10,7 @@ import { useModal } from 'lib/hooks/useModal';
 import FloatingBtns from './FloatingBtns';
 import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef, ReactZoomPanPinchContentRef } from "react-zoom-pan-pinch";
 import Loading from 'lib/components/loading/Loading';
+import useElapsedTime from 'lib/hooks/useElapsedTime';
 
 const cropCanvasToSrc2 = (
     canvas: HTMLCanvasElement,
@@ -48,8 +49,7 @@ const cropCanvasToSrc2 = (
   
 const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
     const { AOI, path, PDFDocumentOnLoadCallback,
-        onCloseCallback
-        , onSaveCallback } = props;
+        onCloseCallback } = props;
     const { showModal } = useModal();
 
     const { pages, maxPageNumber, preparePage } = usePDFLoader(path, PDFDocumentOnLoadCallback);
@@ -288,12 +288,12 @@ const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
 
         }
         // set_showPagination(true);
-        console.log("preparedNowPage",preparedNowPage)
+        // console.log("preparedNowPage",preparedNowPage)
 
         const canvasSize =preparedNowPage.canvasSize;
         const {width,height} = canvasSize;
         // cropCanvasToSrc2(canvas,)
-        console.log("oneAOI",oneAOI);
+        // console.log("oneAOI",oneAOI);
         const ctx = canvas.getContext("2d");
         const {x:xp,y:yp,width:wp,height:hp} = oneAOI;
         const base64=cropCanvasToSrc2(canvas, width*xp/100, height*yp/100, 
@@ -483,6 +483,14 @@ const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
         initialPositionX:0,
         initialPositionY:0,
     });
+    const getElapsedTime = useElapsedTime(); // useElapsedTime 훅을 호출합니다
+
+    const handleOnClose = ()=>{
+        if(onCloseCallback&& typeof onCloseCallback==='function'){
+            const elapsedTime = getElapsedTime(); // 경과 시간을 계산합니다
+            onCloseCallback(tempAOI,elapsedTime);
+        }
+    }
 
     // console.log("zoompanRef",zoompanRef.current?.instance?.contentComponent?.offsetParent)
     return (<div className="centerView" ref={PDFPlayQuizRef}
@@ -621,11 +629,12 @@ const CenterView: React.FC<PDFPlayQuizProps> = (props) => {
                             
                             {showPagination && <div style={{ background: "rgba(0,0,0,.3)", width: "100%", height: "100%", position: "fixed", left: 0, top: 0 }}>
                                 <FloatingBtns
+                                    handleSolveQuiz={handleSolveQuiz}
                                     nowPage={nowPage}
                                     maxPageNumber={maxPageNumber}
                                     handleChangePage={handleChangePage}
-
-                                    onCloseCallback={onCloseCallback}
+                                    tempAOI={tempAOI}
+                                    onCloseCallback={handleOnClose}
                                     showFloating={showPagination}
                                 />
 

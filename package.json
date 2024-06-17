@@ -41,7 +41,7 @@
     "dist"
   ],
   "scripts": {
-    "deploy_npm": "npm version patch && npm publish",
+    "deploy_npm": "npm version patch && npm publish && git push origin master",
     "dev": "tsc && vite build --watch",
     "copy": "xcopy /E /I /Y dist src\\dist",
     "start": "vite --host --open",

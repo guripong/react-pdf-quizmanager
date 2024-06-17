@@ -216,8 +216,8 @@ interface PDFPlayQuizProps{
 
       
         PDFDocumentOnLoadCallback?: (pages: number) => void;
-        onCloseCallback?: ()=>void;
-        onSaveCallback?: (newAOI:Coordinate[][])=>void;
+        onCloseCallback?: (newAOI:Coordinate[][],duration:number)=>void;
+        // onSaveCallback?: (newAOI:Coordinate[][])=>void;
         //onCloseCallback
         //onPreviewCallback
 
