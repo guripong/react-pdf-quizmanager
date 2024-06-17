@@ -54,6 +54,23 @@ const QuizDetail: React.FC<QuizDetailProps> = (props) => {
         onChangeOneAOI(newAOI, pageIndex, areaIndex);
     }
 
+    const handleOnchangePoint: ChangeEventHandler<HTMLSelectElement> | undefined = (e) => {
+        const newAOI: Coordinate = {
+            ...oneAOI,
+            point: Number(e.target.value)
+        }
+        onChangeOneAOI(newAOI, pageIndex, areaIndex);
+    }
+    const handleOnchangeCategory: ChangeEventHandler<HTMLSelectElement> | undefined = (e) => {
+        const newAOI: Coordinate = {
+            ...oneAOI,
+            category: Number(e.target.value)
+        }
+        onChangeOneAOI(newAOI, pageIndex, areaIndex);
+    }
+    
+
+
     return (<div className="QuizDetail"
         ref={quizDetailRef}
     >
@@ -105,7 +122,40 @@ const QuizDetail: React.FC<QuizDetailProps> = (props) => {
                                 ))}
                             </select>
                         </div>
-
+                        <div className="qd_row">
+                            <div className="selectLabel">
+                                #배점
+                            </div>
+                            <select
+                                className="normalSelect"
+                                style={{ width: 130 }}
+                                value={oneAOI.point}
+                                onChange={handleOnchangePoint}
+                            >
+                                {[...Array(10).keys()].map((value) => (
+                                    <option key={value + 1} value={value + 1}>
+                                        {value + 1}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="qd_row">
+                            <div className="selectLabel">
+                                #카테고리
+                            </div>
+                            <select
+                                className="normalSelect"
+                                style={{ width: 130 }}
+                                value={oneAOI.category}
+                                onChange={handleOnchangeCategory}
+                            >
+                                {[...Array(6).keys()].map((value) => (
+                                    <option key={value + 1} value={value + 1}>
+                                        {value + 1}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                         <div className="qd_row">
                             <button className="normalBtn" onMouseDown={() => set_showQuizDetail(false)}>확인</button>
                         </div>
@@ -130,7 +180,40 @@ const QuizDetail: React.FC<QuizDetailProps> = (props) => {
                             />
  
                         </div>
-
+                        <div className="qd_row">
+                            <div className="selectLabel">
+                                #배점
+                            </div>
+                            <select
+                                className="normalSelect"
+                                style={{ width: 130 }}
+                                value={oneAOI.point}
+                                onChange={handleOnchangePoint}
+                            >
+                                {[...Array(10).keys()].map((value) => (
+                                    <option key={value + 1} value={value + 1}>
+                                        {value + 1}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="qd_row">
+                            <div className="selectLabel">
+                                #카테고리
+                            </div>
+                            <select
+                                className="normalSelect"
+                                style={{ width: 130 }}
+                                value={oneAOI.category}
+                                onChange={handleOnchangeCategory}
+                            >
+                                {[...Array(6).keys()].map((value) => (
+                                    <option key={value + 1} value={value + 1}>
+                                        {value + 1}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                         <div className="qd_row">
                             <button className="normalBtn" onMouseDown={() => set_showQuizDetail(false)}>확인</button>
                         </div>

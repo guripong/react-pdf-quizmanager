@@ -169,8 +169,8 @@ const PDFEnrollQuiz: React.FC<PDFEnrollQuizProps> = (props) => {
  
         const resizeObserver = new ResizeObserver(entries => {
             // 크기 변경시 실행할 작업을 여기에 작성합니다.
-            entries.forEach(() => {
-                // console.log('@@@@@@@@@@@@@@@@PDFDocument 껍데기의 크기가 변경되었습니다!', entry.contentRect.width, entry.contentRect.height);
+            entries.forEach((entry) => {
+                console.log('@@@@@@@@@@@@@@@@PDFDocument 껍데기의 크기가 변경되었습니다!', entry.contentRect.width, entry.contentRect.height);
                 // set_renderWidth(entry.contentRect.width * viewPercent / 100);
                 // const contentWidth = wrapEl.offsetWidth;
                 // const contentHeight = wrapEl.offsetHeight;
