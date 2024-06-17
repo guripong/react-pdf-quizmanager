@@ -101,7 +101,9 @@ const MultipleCropDiv2 = forwardRef<MultipleCropDivInstance, MultipleCropDivProp
         height: Math.abs(pointA.yr - pointB.yr),
         id: idRef.current,
         type: type,
-        name: `${temp_name}(${pageIndex + 1}-${pageAOIArr.length})`
+        name: `${temp_name}(${pageIndex + 1}-${pageAOIArr.length})`,
+        category:1,
+        point:1,
       };
 
 

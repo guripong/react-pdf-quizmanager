@@ -25,6 +25,8 @@ function App() {
         name: "객관식(1-1)",
         quizOptionCount: 3, // (1~10 선택가능)
         correctAnswer: 1, // 1번이 정답, 0번은 정답없음
+        category:1,//1,2,3,4
+        point: 1,        
       },
       {
         x: 6,
@@ -35,6 +37,8 @@ function App() {
         type: "SJ", // 주관식 Subject
         name: "주관식(1-2)",
         correctAnswer: "",
+        category:1,//1,2,3,4
+        point: 1,   
       },
       {
         x: 48.82198952879581,
@@ -45,6 +49,8 @@ function App() {
         type: "SJ", // 주관식 Subject
         name: "주관식(1-3)",
         correctAnswer: "",
+        category:1,//1,2,3,4
+        point: 1,   
       },
     ],
   ]);
@@ -185,7 +191,7 @@ function App() {
           }}
 
           onSaveCallback={(newAOI: Coordinate[][], newFileName: string) => {
-            console.log("newAOI",newAOI)
+            console.log("newAOI", newAOI)
             setTempAOI(newAOI);
             set_pdfName(newFileName);
           }}
@@ -206,9 +212,9 @@ function App() {
           PDFDocumentOnLoadCallback={() => {
 
           }}
-          onCloseCallback={(saveAOI:Coordinate[][],duration:number) => {
+          onCloseCallback={(saveAOI: Coordinate[][], duration: number) => {
             console.log("저장할newAOI", saveAOI)
-            console.log("측정시간",duration)
+            console.log("측정시간", duration)
             set_playOption((prev: PDFPlayQuizProps | null) => {
               if (prev) {
                 console.log("메모리해제");
@@ -221,7 +227,7 @@ function App() {
 
           }}
 
-  
+
 
         />
 

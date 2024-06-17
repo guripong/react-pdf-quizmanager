@@ -73,6 +73,8 @@ interface Coordinate {
     quizOptionCount?: number;
     correctAnswer?: number | string;
     answer?:number | string;
+    category?:number;
+    point?:number;
 }
 
 interface PreRenderedPDFPage {
