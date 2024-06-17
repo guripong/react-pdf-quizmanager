@@ -31,13 +31,24 @@ const QuizDetail: React.FC<QuizDetailProps> = (props) => {
 
 
     const handleOnchangeQuizCount: ChangeEventHandler<HTMLSelectElement> | undefined = (e) => {
-
+        const newQuizOptionCount = Number(e.target.value);
+    
+        // Ensure correctAnswer is defined and a number before comparing or using it
+        let newCorrectAnswer: number | undefined;
+        if (oneAOI.correctAnswer !== undefined && !isNaN(Number(oneAOI.correctAnswer))) {
+            newCorrectAnswer = (Number(oneAOI.correctAnswer) > newQuizOptionCount) ? 0 : Number(oneAOI.correctAnswer);
+        } else {
+            newCorrectAnswer = undefined;
+        }
+    
         const newAOI: Coordinate = {
             ...oneAOI,
-            quizOptionCount: Number(e.target.value)
-        }
+            quizOptionCount: newQuizOptionCount,
+            correctAnswer: newCorrectAnswer
+        };
+    
         onChangeOneAOI(newAOI, pageIndex, areaIndex);
-    }
+    };
 
     const handleOnchangeCorrectAnswer: ChangeEventHandler<HTMLSelectElement> | undefined = (e) => {
         const newAOI: Coordinate = {
@@ -115,7 +126,7 @@ const QuizDetail: React.FC<QuizDetailProps> = (props) => {
                                 onChange={handleOnchangeCorrectAnswer}
                             >
                                 <option value={0}>정답없음</option>
-                                {[...Array(10).keys()].map((value) => (
+                                {[...Array(oneAOI.quizOptionCount).keys()].map((value) => (
                                     <option key={value + 1} value={value + 1}>
                                         {value + 1}
                                     </option>
